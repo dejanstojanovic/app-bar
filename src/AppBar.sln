@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppBar", "AppBar\AppBar.csproj", "{059BC985-486F-40F7-A8DB-97024390E9EA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAppBar", "WinAppBar\WinAppBar.csproj", "{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinAppBar", "WinAppBar\WinAppBar.csproj", "{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{059BC985-486F-40F7-A8DB-97024390E9EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{059BC985-486F-40F7-A8DB-97024390E9EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{059BC985-486F-40F7-A8DB-97024390E9EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{059BC985-486F-40F7-A8DB-97024390E9EA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
