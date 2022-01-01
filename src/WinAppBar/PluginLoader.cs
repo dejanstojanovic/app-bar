@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinAppBar.Plugins;
 using WinAppBar.Shortcuts;
 
 namespace WinAppBar
@@ -14,11 +15,13 @@ namespace WinAppBar
 
         }
 
-        public void LoadPlugins(Form host)
+        public IEnumerable<IPlugin> LoadPlugins(Form host)
         {
             var shortcuts = new Plugin();
-            host.Controls.Add(shortcuts);
-        }
 
+            host.Controls.Add(shortcuts);
+
+            return new[] { shortcuts };
+        }
     }
 }

@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WinAppBar.Plugins\WinAppBar.Plugins.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Plugin.cs">
       <SubType>Component</SubType>
     </Compile>

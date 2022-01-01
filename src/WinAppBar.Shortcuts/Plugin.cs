@@ -1,9 +1,10 @@
 ﻿using Microsoft.Win32;
 using System.Diagnostics;
+using WinAppBar.Plugins;
 
 namespace WinAppBar.Shortcuts
 {
-    public class Plugin : Panel
+    public class Plugin : Panel, IPlugin
     {
 
         #region Win API
@@ -43,6 +44,9 @@ namespace WinAppBar.Shortcuts
         #endregion Win API
 
         readonly ToolTip toolTip;
+        readonly ContextMenuStrip contextMenuStrip;
+
+        public event EventHandler ApplicationExit = null;
 
         public Plugin() : base()
         {
@@ -58,6 +62,22 @@ namespace WinAppBar.Shortcuts
                 ReshowDelay = 0,
                 ShowAlways = true
             };
+
+            contextMenuStrip = new ContextMenuStrip()
+            {
+                RenderMode = System.Windows.Forms.ToolStripRenderMode.System
+            };
+            ToolStripMenuItem exitToolStripMenuItem = new ToolStripMenuItem("Exit", null, null, "Exit");
+            exitToolStripMenuItem.Click += ExitToolStripMenuItem_Click;
+
+            contextMenuStrip.Items.Add(exitToolStripMenuItem);
+            this.ContextMenuStrip = contextMenuStrip;
+        }
+
+        private void ExitToolStripMenuItem_Click(object? sender, EventArgs e)
+        {
+            if (this.ApplicationExit != null)
+                this.ApplicationExit.Invoke(this, EventArgs.Empty);
         }
 
         private void Plugin_DragOver(object? sender, DragEventArgs e)

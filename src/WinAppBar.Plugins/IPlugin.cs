@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WinAppBar.Plugins;
 
-namespace WinAppBar
+namespace WinAppBar.Plugins
 {
-    internal interface IPluginLoader
+    public interface IPlugin
     {
-        IEnumerable<IPlugin> LoadPlugins(Form host);
+        event EventHandler ApplicationExit;
     }
 }

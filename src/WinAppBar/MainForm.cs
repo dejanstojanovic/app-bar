@@ -264,7 +264,15 @@ namespace WinAppBar
             this.FormClosing += MainForm_FormClosing;
 
             IPluginLoader pluginLoader = new PluginLoader();
-            pluginLoader.LoadPlugins(this);
+            var plugins =  pluginLoader.LoadPlugins(this);
+            foreach(var plugin in plugins)
+                plugin.ApplicationExit += Plugin_ApplicationExit;
+        }
+
+        private void Plugin_ApplicationExit(object? sender, EventArgs e)
+        {
+            RegisterBar();
+            Process.GetCurrentProcess().Kill();
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
