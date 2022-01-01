@@ -41,13 +41,23 @@ namespace WinAppBar.Shortcuts
         }
 
         #endregion Win API
-        
+
+        readonly ToolTip toolTip;
+
         public Plugin() : base()
         {
             this.Dock = DockStyle.Fill;
             this.AllowDrop = true;
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
+
+            toolTip = new ToolTip()
+            {
+                AutoPopDelay = 0,
+                InitialDelay = 1,
+                ReshowDelay = 0,
+                ShowAlways = true
+            };
         }
 
         private void Plugin_DragOver(object? sender, DragEventArgs e)
@@ -111,10 +121,20 @@ namespace WinAppBar.Shortcuts
 
                     pictureBox.MouseEnter += PictureBox_MouseEnter;
                     pictureBox.MouseLeave += PictureBox_MouseLeave;
+                    pictureBox.MouseHover += PictureBox_MouseHover;
                     pictureBox.Click += PictureBox_Click;
 
                     this.Controls.Add(pictureBox);
                 }
+            }
+        }
+
+        private void PictureBox_MouseHover(object? sender, EventArgs e)
+        {
+            var btn = sender as Control;
+            if (btn != null)
+            {
+                toolTip.SetToolTip(btn, btn.Tag.ToString());
             }
         }
 
@@ -134,8 +154,8 @@ namespace WinAppBar.Shortcuts
 
             var processInfo = new ProcessStartInfo();
             var executables = new String[] { ".exe", ".com", ".bat" };
-            if (IsDirectory(path) || 
-                !executables.Any(e=> e.Equals(Path.GetExtension(path), StringComparison.InvariantCultureIgnoreCase)))
+            if (IsDirectory(path) ||
+                !executables.Any(e => e.Equals(Path.GetExtension(path), StringComparison.InvariantCultureIgnoreCase)))
             {
                 processInfo.FileName = path;
                 processInfo.UseShellExecute = true;
