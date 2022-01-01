@@ -9,7 +9,9 @@ namespace WinAppBar
         static void Main()
         {
             ApplicationConfiguration.Initialize();
+            Application.EnableVisualStyles();
             Application.Run(new MainForm());
+            
         }
     }
 }

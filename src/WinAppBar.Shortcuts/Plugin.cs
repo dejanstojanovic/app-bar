@@ -3,46 +3,12 @@ using System.Diagnostics;
 using WinAppBar.Plugins;
 using WinAppBar.Plugins.Shortcuts.Extensions;
 
-namespace WinAppBar.Shortcuts
+namespace WinAppBar.Plugins.Shortcuts
 {
     public class Plugin : Panel, IPlugin
     {
 
-        #region Win API
 
-        public static (Byte r, Byte g, Byte b, Byte a) GetAccentColor()
-        {
-            const String DWM_KEY = @"Software\Microsoft\Windows\DWM";
-            using (RegistryKey dwmKey = Registry.CurrentUser.OpenSubKey(DWM_KEY, RegistryKeyPermissionCheck.ReadSubTree))
-            {
-                const String KEY_EX_MSG = "The \"HKCU\\" + DWM_KEY + "\" registry key does not exist.";
-                if (dwmKey is null) throw new InvalidOperationException(KEY_EX_MSG);
-
-                Object accentColorObj = dwmKey.GetValue("AccentColor");
-                if (accentColorObj is Int32 accentColorDword)
-                {
-                    return ParseDWordColor(accentColorDword);
-                }
-                else
-                {
-                    const String VALUE_EX_MSG = "The \"HKCU\\" + DWM_KEY + "\\AccentColor\" registry key value could not be parsed as an ABGR color.";
-                    throw new InvalidOperationException(VALUE_EX_MSG);
-                }
-            }
-
-            static (Byte r, Byte g, Byte b, Byte a) ParseDWordColor(Int32 color)
-            {
-                Byte
-                    a = (Byte)((color >> 24) & 0xFF),
-                    b = (Byte)((color >> 16) & 0xFF),
-                    g = (Byte)((color >> 8) & 0xFF),
-                    r = (Byte)((color >> 0) & 0xFF);
-
-                return (r, g, b, a);
-            }
-        }
-
-        #endregion Win API
 
         readonly ToolTip toolTip;
         readonly ContextMenuStrip contextMenuStripMain;
@@ -142,7 +108,7 @@ namespace WinAppBar.Shortcuts
 
         private void LoadShortcuts(IEnumerable<string> files)
         {
-            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk" };
+            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk",".ico" };
 
             foreach (var file in files)
             {
@@ -230,7 +196,7 @@ namespace WinAppBar.Shortcuts
 
         private void PictureBox_MouseEnter(object? sender, EventArgs e)
         {
-            var accentColor = GetAccentColor();
+            var accentColor = ColorUtils.GetAccentColor();
             var control = sender as PictureBox;
             if (control != null)
                 control.BackColor = Color.FromArgb(accentColor.a, accentColor.r, accentColor.g, accentColor.b);

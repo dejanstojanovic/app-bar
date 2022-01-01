@@ -1,18 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WinAppBar.Plugins.SystemResources\WinAppBar.Plugins.SystemResources.csproj" />
     <ProjectReference Include="..\WinAppBar.Plugins\WinAppBar.Plugins.csproj" />
-    <ProjectReference Include="..\WinAppBar.Shortcuts\WinAppBar.Plugins.Shortcuts.csproj" />
   </ItemGroup>
 
 </Project>

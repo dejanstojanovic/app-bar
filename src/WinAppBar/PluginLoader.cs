@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WinAppBar.Plugins;
-using WinAppBar.Shortcuts;
+using Shortcuts = WinAppBar.Plugins.Shortcuts;
+using SystemResources = WinAppBar.Plugins.SystemResources;
 
 namespace WinAppBar
 {
-    public class PluginLoader:IPluginLoader
+    public class PluginLoader : IPluginLoader
     {
         public PluginLoader()
         {
@@ -17,11 +18,16 @@ namespace WinAppBar
 
         public IEnumerable<IPlugin> LoadPlugins(Form host)
         {
-            var shortcuts = new Plugin();
+            var plugins = new IPlugin[]
+            {
+                new Shortcuts.Plugin(),
+                new SystemResources.Plugin(),
+            };
 
-            host.Controls.Add(shortcuts);
+            foreach (var plugin in plugins)
+                host.Controls.Add(plugin as Control);
 
-            return new[] { shortcuts };
+            return plugins;
         }
     }
 }
