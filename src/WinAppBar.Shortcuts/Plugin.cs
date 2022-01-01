@@ -1,78 +1,13 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace WinAppBar.Shortcuts
 {
     public class Plugin : Panel
     {
-        public Plugin() : base()
-        {
-            this.Dock = DockStyle.Fill;
-            this.AllowDrop = true;
-            this.DragDrop += Plugin_DragDrop;
-            this.DragOver += Plugin_DragOver;
-        }
-
-        private void Plugin_DragOver(object? sender, DragEventArgs e)
-        {
-            if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
-                e.Effect = DragDropEffects.Link;
-            else
-                e.Effect = DragDropEffects.None;
-        }
-
-        private void Plugin_DragDrop(object? sender, DragEventArgs e)
-        {
-            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk" };
-
-            IEnumerable<string> files = e.Data != null && e.Data.GetData(DataFormats.FileDrop) != null ?
-                                        e.Data.GetData(DataFormats.FileDrop) as IEnumerable<string> :
-                                        null;
-
-            if (files == null || !files.Any())
-                return;
-
-            foreach (var file in files)
-            {
-                Icon icon = null;
-
-                FileAttributes attr = File.GetAttributes(file);
-                if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-                    icon = IconTools.GetIconForFile(file, ShellIconSize.SmallIcon);
-                else
-                {
-                    var extension = Path.GetExtension(file);
-                    icon = fileExtensionsWithIcons.Any(e => e.Equals(extension)) ?
-                        IconTools.GetIconForFile(file, ShellIconSize.SmallIcon) :
-                        IconTools.GetIconForExtension(extension, ShellIconSize.SmallIcon);
-                }
-
-                if (icon != null)
-                {
-                    var pictureBox = new PictureBox()
-                    {
-                        Image = icon.ToBitmap(),
-                        Size = new Size(24, 24),
-                        Padding = new Padding(4),
-                        Top = 5,
-                        //Left = (this.Controls.Count * pictureBox.Width)+5
-                    };
-                    pictureBox.Left = 5+ (this.Controls.Count * pictureBox.Width) + (this.Controls.Count * 2);
-
-                    pictureBox.MouseHover += PictureBox_MouseHover;
-                    pictureBox.MouseLeave += PictureBox_MouseLeave;
-
-                    this.Controls.Add(pictureBox);
-                }
-            }
-        }
 
         #region Win API
+
         public static (Byte r, Byte g, Byte b, Byte a) GetAccentColor()
         {
             const String DWM_KEY = @"Software\Microsoft\Windows\DWM";
@@ -96,19 +31,119 @@ namespace WinAppBar.Shortcuts
             static (Byte r, Byte g, Byte b, Byte a) ParseDWordColor(Int32 color)
             {
                 Byte
-                    a = (Byte) ((color >> 24) & 0xFF),
+                    a = (Byte)((color >> 24) & 0xFF),
                     b = (Byte)((color >> 16) & 0xFF),
                     g = (Byte)((color >> 8) & 0xFF),
                     r = (Byte)((color >> 0) & 0xFF);
 
                 return (r, g, b, a);
             }
+        }
+
+        #endregion Win API
+        
+        public Plugin() : base()
+        {
+            this.Dock = DockStyle.Fill;
+            this.AllowDrop = true;
+            this.DragDrop += Plugin_DragDrop;
+            this.DragOver += Plugin_DragOver;
+        }
+
+        private void Plugin_DragOver(object? sender, DragEventArgs e)
+        {
+            if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Link;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void Plugin_DragDrop(object? sender, DragEventArgs e)
+        {
+            IEnumerable<string> files = e.Data != null && e.Data.GetData(DataFormats.FileDrop) != null ?
+                                        e.Data.GetData(DataFormats.FileDrop) as IEnumerable<string> :
+                                        null;
+
+            if (files == null || !files.Any())
+                return;
+
+            LoadShortcuts(files);
+        }
+
+        private bool IsDirectory(string path)
+        {
+            FileAttributes attr = File.GetAttributes(path);
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                return true;
+
+            return false;
 
         }
 
+        private void LoadShortcuts(IEnumerable<string> files)
+        {
+            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk" };
 
+            foreach (var file in files)
+            {
+                Icon icon = null;
+                if (IsDirectory(file))
+                    icon = IconTools.GetIconForFile(file, ShellIconSize.SmallIcon);
+                else
+                {
+                    var extension = Path.GetExtension(file);
+                    icon = fileExtensionsWithIcons.Any(e => e.Equals(extension)) ?
+                        IconTools.GetIconForFile(file, ShellIconSize.SmallIcon) :
+                        IconTools.GetIconForExtension(extension, ShellIconSize.SmallIcon);
+                }
 
-        #endregion
+                if (icon != null)
+                {
+                    var pictureBox = new PictureBox()
+                    {
+                        Image = icon.ToBitmap(),
+                        Size = new Size(24, 24),
+                        Padding = new Padding(4),
+                        Top = 5,
+                        Tag = file
+                    };
+                    pictureBox.Left = 5 + (this.Controls.Count * pictureBox.Width) + (this.Controls.Count * 2);
+
+                    pictureBox.MouseEnter += PictureBox_MouseEnter;
+                    pictureBox.MouseLeave += PictureBox_MouseLeave;
+                    pictureBox.Click += PictureBox_Click;
+
+                    this.Controls.Add(pictureBox);
+                }
+            }
+        }
+
+        private void PictureBox_Click(object? sender, EventArgs e)
+        {
+            var control = sender as PictureBox;
+            if (control == null)
+                return;
+
+            var path = control.Tag.ToString();
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var processInfo = new ProcessStartInfo();
+            var executables = new String[] { ".exe", ".com", ".bat" };
+            if (IsDirectory(path) || 
+                !executables.Any(e=> e.Equals(Path.GetExtension(path), StringComparison.InvariantCultureIgnoreCase)))
+            {
+                processInfo.FileName = path;
+                processInfo.UseShellExecute = true;
+            }
+            else
+            {
+                processInfo.FileName = path;
+                processInfo.UseShellExecute = false;
+            }
+
+            Process.Start(processInfo);
+        }
 
         private void PictureBox_MouseLeave(object? sender, EventArgs e)
         {
@@ -117,13 +152,12 @@ namespace WinAppBar.Shortcuts
                 control.BackColor = Color.Transparent;
         }
 
-
-        private void PictureBox_MouseHover(object? sender, EventArgs e)
+        private void PictureBox_MouseEnter(object? sender, EventArgs e)
         {
             var accentColor = GetAccentColor();
             var control = sender as PictureBox;
             if (control != null)
-                control.BackColor = Color.FromArgb(accentColor.a,accentColor.r,accentColor.g,accentColor.b);
+                control.BackColor = Color.FromArgb(accentColor.a, accentColor.r, accentColor.g, accentColor.b);
         }
     }
 }
