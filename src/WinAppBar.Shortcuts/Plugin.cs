@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System.Diagnostics;
 using WinAppBar.Plugins;
+using WinAppBar.Plugins.Shortcuts.Extensions;
 
 namespace WinAppBar.Shortcuts
 {
@@ -44,7 +45,8 @@ namespace WinAppBar.Shortcuts
         #endregion Win API
 
         readonly ToolTip toolTip;
-        readonly ContextMenuStrip contextMenuStrip;
+        readonly ContextMenuStrip contextMenuStripMain;
+        readonly ContextMenuStrip contextMenuStripShortcut;
 
         public event EventHandler ApplicationExit = null;
 
@@ -63,22 +65,50 @@ namespace WinAppBar.Shortcuts
                 ShowAlways = true
             };
 
-            contextMenuStrip = new ContextMenuStrip()
+            contextMenuStripMain = new ContextMenuStrip()
             {
-                RenderMode = System.Windows.Forms.ToolStripRenderMode.System
+                RenderMode = ToolStripRenderMode.System,
             };
-            ToolStripMenuItem exitToolStripMenuItem = new ToolStripMenuItem("Exit", null, null, "Exit");
-            exitToolStripMenuItem.Click += ExitToolStripMenuItem_Click;
+            ToolStripMenuItem exitToolStripMenuItem = new ToolStripMenuItem("Exit", null,
+                (sender, e) =>
+                {
+                    if (this.ApplicationExit != null)
+                        this.ApplicationExit.Invoke(this, EventArgs.Empty);
+                }, "Exit");
+            contextMenuStripMain.Items.Add(exitToolStripMenuItem);
+            this.ContextMenuStrip = contextMenuStripMain;
 
-            contextMenuStrip.Items.Add(exitToolStripMenuItem);
-            this.ContextMenuStrip = contextMenuStrip;
+
+            contextMenuStripShortcut = new ContextMenuStrip()
+            {
+                RenderMode = ToolStripRenderMode.System
+            };
+            contextMenuStripShortcut.Items.Add(
+            new ToolStripMenuItem("Open", null, (sender, e) =>
+            {
+                var item = sender as ToolStripMenuItem;
+                if (item != null)
+                {
+                    var sourceControl = item.GetSourceControl();
+                    if (sourceControl != null)
+                        PictureBox_Click(sourceControl, new MouseEventArgs(MouseButtons.Left,1,0,0,0));
+                }
+            }, "Open"));
+            contextMenuStripShortcut.Items.Add(
+            new ToolStripMenuItem("Remove", null, (sender, e) =>
+            {
+                var item = sender as ToolStripMenuItem;
+                if(item != null)
+                {
+                    var sourceControl = item.GetSourceControl();
+                    if(sourceControl != null)
+                        sourceControl.Parent.Controls.Remove(sourceControl);
+                }
+
+            }, "Remove"));
+
         }
 
-        private void ExitToolStripMenuItem_Click(object? sender, EventArgs e)
-        {
-            if (this.ApplicationExit != null)
-                this.ApplicationExit.Invoke(this, EventArgs.Empty);
-        }
 
         private void Plugin_DragOver(object? sender, DragEventArgs e)
         {
@@ -145,6 +175,8 @@ namespace WinAppBar.Shortcuts
                     pictureBox.Click += PictureBox_Click;
 
                     this.Controls.Add(pictureBox);
+
+                    pictureBox.ContextMenuStrip = contextMenuStripShortcut;
                 }
             }
         }
