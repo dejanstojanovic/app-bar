@@ -120,6 +120,10 @@ namespace WinAppBar.Shortcuts
 
         private void PictureBox_Click(object? sender, EventArgs e)
         {
+            MouseEventArgs args = (MouseEventArgs)e;
+            if (args != null && args.Button == MouseButtons.Right)
+                return;
+
             var control = sender as PictureBox;
             if (control == null)
                 return;
