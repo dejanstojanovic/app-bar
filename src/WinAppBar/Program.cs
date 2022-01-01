@@ -8,10 +8,19 @@ namespace WinAppBar
         [STAThread]
         static void Main()
         {
-            ApplicationConfiguration.Initialize();
-            Application.EnableVisualStyles();
-            Application.Run(new MainForm());
-            
+            bool canCreateInstance = false;
+            var mutex = new Mutex(true, "D9A46512-C517-40A2-8860-7D440705CC4C", out canCreateInstance);
+
+            if (canCreateInstance)
+            {
+                ApplicationConfiguration.Initialize();
+                Application.EnableVisualStyles();
+                Application.Run(new MainForm());
+
+                mutex.ReleaseMutex();
+            }
+            else
+                return;
         }
     }
 }
