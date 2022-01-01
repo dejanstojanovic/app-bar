@@ -251,7 +251,6 @@ namespace WinAppBar
         }
         #endregion
 
-
         public MainForm()
         {
             InitializeComponent();
@@ -262,8 +261,10 @@ namespace WinAppBar
             this.BackColor = GetTaskbarColor();
             this.EnableAcrylic(this.BackColor);
             RegisterBar();
-
             this.FormClosing += MainForm_FormClosing;
+
+            IPluginLoader pluginLoader = new PluginLoader();
+            pluginLoader.LoadPlugins(this);
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
