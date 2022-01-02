@@ -10,7 +10,7 @@ namespace WinAppBar.Plugins.Shortcuts
 
 
 
-        readonly ToolTip toolTip;
+        
         readonly ContextMenuStrip contextMenuStripMain;
         readonly ContextMenuStrip contextMenuStripShortcut;
 
@@ -23,27 +23,30 @@ namespace WinAppBar.Plugins.Shortcuts
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
 
-            toolTip = new ToolTip()
-            {
-                AutoPopDelay = 0,
-                InitialDelay = 1,
-                ReshowDelay = 0,
-                ShowAlways = true
-            };
-
-
             #region Main ContextMenu
             contextMenuStripMain = new ContextMenuStrip()
             {
                 RenderMode = ToolStripRenderMode.System,
             };
-            ToolStripMenuItem exitToolStripMenuItem = new ToolStripMenuItem("Exit", null,
+
+            contextMenuStripMain.Items.Add(new ToolStripMenuItem("Show/hide labels", null,
+                (sender, e) =>
+                {
+                   foreach(Shortcut shortcut in this.Controls)
+                    {
+                        shortcut.ToggleLabel();
+                        this.ReArrangeShortcuts();
+                    }
+                }, "Exit"));
+
+            contextMenuStripMain.Items.Add("-");
+
+            contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
                 (sender, e) =>
                 {
                     if (this.ApplicationExit != null)
                         this.ApplicationExit.Invoke(this, EventArgs.Empty);
-                }, "Exit");
-            contextMenuStripMain.Items.Add(exitToolStripMenuItem);
+                }, "Exit"));
             this.ContextMenuStrip = contextMenuStripMain;
             #endregion
 
@@ -161,9 +164,7 @@ namespace WinAppBar.Plugins.Shortcuts
                         left += control.Width + 4;
                     }
                     shortcut.Left = left;
-
-                    shortcut.MouseHover += Shortcut_MouseHover;
-                    
+                   
                     shortcut.ContextMenuStrip = contextMenuStripShortcut;
 
                     this.Controls.Add(shortcut);
@@ -173,14 +174,7 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
 
-        private void Shortcut_MouseHover(object? sender, EventArgs e)
-        {
-            var btn = sender as Control;
-            if (btn != null)
-            {
-                toolTip.SetToolTip(btn, btn.Tag.ToString());
-            }
-        }
+
 
 
     }

@@ -16,12 +16,21 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
 
+        readonly ToolTip toolTip;
         public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
         readonly Label _label;
         readonly PictureBox _pictureBox;
 
         public Shortcut(string path)
         {
+            toolTip = new ToolTip()
+            {
+                AutoPopDelay = 0,
+                InitialDelay = 1,
+                ReshowDelay = 0,
+                ShowAlways = true
+            };
+
             //this.BackColor = Color.Orange;
 
             _pictureBox = new PictureBox()
@@ -53,26 +62,25 @@ namespace WinAppBar.Plugins.Shortcuts
 
             this.Controls.Add(_label);
 
-       
-
 
             foreach (Control control in this.Controls)
             {
                 control.MouseEnter += Shortcut_MouseEnter;
                 control.MouseLeave += Shortcut_MouseLeave;
                 control.Click += Shortcut_Click;
+                control.MouseHover += Shortcut_MouseHover;
             }
 
             this.MouseEnter += Shortcut_MouseEnter;
             this.MouseLeave += Shortcut_MouseLeave;
             this.Click += Shortcut_Click;
-
+            this.MouseHover += Shortcut_MouseHover;
 
         }
 
         public void OpenShortcut()
         {
-            var path = this.Tag!=null ? this.Tag.ToString() : null;
+            var path = this.Tag != null ? this.Tag.ToString() : null;
             if (string.IsNullOrEmpty(path))
                 return;
             var processInfo = new ProcessStartInfo();
@@ -96,7 +104,7 @@ namespace WinAppBar.Plugins.Shortcuts
 
         public void Unfocus()
         {
-            if (this.BackColor != Color.Transparent || 
+            if (this.BackColor != Color.Transparent ||
                 this.Controls.Cast<Control>().Any(c => c.BackColor != Color.Transparent))
             {
                 foreach (Control control in this.Controls)
@@ -117,8 +125,15 @@ namespace WinAppBar.Plugins.Shortcuts
 
                 width = width + MeasureDisplayStringWidth(_label.CreateGraphics(), _label.Text, _label.Font);
                 _label.Top = 1 + (_pictureBox.Height - (int)labelSize.Height) / 2;
+                width = width + _pictureBox.Padding.Left;
             }
-            this.Width = width + _pictureBox.Padding.Left;
+            this.Width = width;
+        }
+
+        public void ToggleLabel()
+        {
+            _label.Visible = !_label.Visible;
+            Resize();
         }
 
         public static int MeasureDisplayStringWidth(Graphics graphics, string text,
@@ -162,7 +177,7 @@ namespace WinAppBar.Plugins.Shortcuts
                 control.BackColor = accentColor;
 
             this.BackColor = accentColor;
-            
+
         }
 
         private void Shortcut_Click(object? sender, EventArgs e)
@@ -171,9 +186,19 @@ namespace WinAppBar.Plugins.Shortcuts
             if (args != null && args.Button == MouseButtons.Right)
                 return;
 
-            OpenShortcut(); 
+            OpenShortcut();
         }
 
+        private void Shortcut_MouseHover(object? sender, EventArgs e)
+        {
+            var shortcut = sender as Control;
+            if (shortcut != null && 
+                this.Tag != null && 
+                !string.IsNullOrWhiteSpace(this.Tag.ToString()))
+            {
+                toolTip.SetToolTip(shortcut, this.Tag.ToString());
+            }
+        }
 
     }
 }
