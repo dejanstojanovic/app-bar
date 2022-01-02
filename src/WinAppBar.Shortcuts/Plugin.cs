@@ -57,17 +57,17 @@ namespace WinAppBar.Plugins.Shortcuts
                 {
                     var sourceControl = item.GetSourceControl();
                     if (sourceControl != null)
-                        PictureBox_Click(sourceControl, new MouseEventArgs(MouseButtons.Left,1,0,0,0));
+                        Shortcut_Click(sourceControl, new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
                 }
             }, "Open"));
             contextMenuStripShortcut.Items.Add(
             new ToolStripMenuItem("Remove", null, (sender, e) =>
             {
                 var item = sender as ToolStripMenuItem;
-                if(item != null)
+                if (item != null)
                 {
                     var sourceControl = item.GetSourceControl();
-                    if(sourceControl != null)
+                    if (sourceControl != null)
                         sourceControl.Parent.Controls.Remove(sourceControl);
                 }
 
@@ -108,7 +108,7 @@ namespace WinAppBar.Plugins.Shortcuts
 
         private void LoadShortcuts(IEnumerable<string> files)
         {
-            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk",".ico" };
+            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
 
             foreach (var file in files)
             {
@@ -125,35 +125,36 @@ namespace WinAppBar.Plugins.Shortcuts
 
                 if (icon != null)
                 {
-                    var shortcut = new Shortcut(file);
-                    shortcut.Icon = icon.ToBitmap();
-                    shortcut.Label = Path.GetFileName(file);
+                    var shortcut = new Shortcut(file)
+                    {
+                        Icon = icon.ToBitmap(),
+                        Label = Path.GetFileName(file),
+                        Top = 4,
+                        Tag = file
+                    };
+
+                    var left = 4;
+                    foreach(Control control  in this.Controls)
+                    {
+                        left += control.Width + 4;
+                    }
+                    shortcut.Left = left;
+
+                    shortcut.MouseEnter += Shortcut_MouseEnter;
+                    shortcut.MouseLeave += Shortcut_MouseLeave;
+                    shortcut.MouseHover += Shortcut_MouseHover;
+                    shortcut.Click += Shortcut_Click;
+                    shortcut.ContextMenuStrip = contextMenuStripShortcut;
+
 
                     this.Controls.Add(shortcut);
 
-                    //var pictureBox = new PictureBox()
-                    //{
-                    //    Image = icon.ToBitmap(),
-                    //    Size = new Size(24, 24),
-                    //    Padding = new Padding(4),
-                    //    Top = 5,
-                    //    Tag = file
-                    //};
-                    //pictureBox.Left = 5 + (this.Controls.Count * pictureBox.Width) + (this.Controls.Count * 2);
-
-                    //pictureBox.MouseEnter += PictureBox_MouseEnter;
-                    //pictureBox.MouseLeave += PictureBox_MouseLeave;
-                    //pictureBox.MouseHover += PictureBox_MouseHover;
-                    //pictureBox.Click += PictureBox_Click;
-
-                    //this.Controls.Add(pictureBox);
-
-                    //pictureBox.ContextMenuStrip = contextMenuStripShortcut;
+                   
                 }
             }
         }
 
-        private void PictureBox_MouseHover(object? sender, EventArgs e)
+        private void Shortcut_MouseHover(object? sender, EventArgs e)
         {
             var btn = sender as Control;
             if (btn != null)
@@ -162,13 +163,13 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
 
-        private void PictureBox_Click(object? sender, EventArgs e)
+        private void Shortcut_Click(object? sender, EventArgs e)
         {
             MouseEventArgs args = (MouseEventArgs)e;
             if (args != null && args.Button == MouseButtons.Right)
                 return;
 
-            var control = sender as PictureBox;
+            var control = sender as Shortcut;
             if (control == null)
                 return;
 
@@ -193,17 +194,17 @@ namespace WinAppBar.Plugins.Shortcuts
             Process.Start(processInfo);
         }
 
-        private void PictureBox_MouseLeave(object? sender, EventArgs e)
+        private void Shortcut_MouseLeave(object? sender, EventArgs e)
         {
-            var control = sender as PictureBox;
+            var control = sender as Control;
             if (control != null)
                 control.BackColor = Color.Transparent;
         }
 
-        private void PictureBox_MouseEnter(object? sender, EventArgs e)
+        private void Shortcut_MouseEnter(object? sender, EventArgs e)
         {
             var accentColor = ColorUtils.GetAccentColor();
-            var control = sender as PictureBox;
+            var control = sender as Control;
             if (control != null)
                 control.BackColor = Color.FromArgb(accentColor.a, accentColor.r, accentColor.g, accentColor.b);
         }
