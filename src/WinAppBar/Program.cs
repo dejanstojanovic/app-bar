@@ -9,7 +9,7 @@ namespace WinAppBar
         static void Main()
         {
             bool canCreateInstance = false;
-            var mutex = new Mutex(true, "D9A46512-C517-40A2-8860-7D440705CC4C", out canCreateInstance);
+            var mutex = new Mutex(true, "330ECF4F-5DB6-4A70-B227-D03EB2AC9E6F", out canCreateInstance);
 
             if (canCreateInstance)
             {
