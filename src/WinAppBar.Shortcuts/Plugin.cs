@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System.Diagnostics;
+using System.Reflection;
 using WinAppBar.Plugins;
 using WinAppBar.Plugins.Shortcuts.Extensions;
 
@@ -8,9 +9,6 @@ namespace WinAppBar.Plugins.Shortcuts
     public class Plugin : Panel, IPlugin
     {
 
-
-
-        
         readonly ContextMenuStrip contextMenuStripMain;
         readonly ContextMenuStrip contextMenuStripShortcut;
 
@@ -174,8 +172,16 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
 
+        public async Task SaveConfig()
+        {
+            var configPath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
+                $"{this.GetType().Assembly.GetName().Name}.json");
 
-
-
+            var configuration = new Configuration()
+            {
+                //ShowLabels = this.Controls.Cast<Shortcut>,
+            };
+        }
     }
 }

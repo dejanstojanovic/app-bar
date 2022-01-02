@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using WinAppBar.Extensions;
 
 namespace WinAppBar
@@ -17,6 +9,7 @@ namespace WinAppBar
     public partial class MainForm : Form
     {
         #region Application bar methods
+
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
         {
@@ -86,7 +79,6 @@ namespace WinAppBar
 
         [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
         private static extern int BitBlt(IntPtr hDC, int x, int y, int nWidth, int nHeight, IntPtr hSrcDC, int xSrc, int ySrc, int dwRop);
-
 
         private int uCallBack;
 
@@ -212,7 +204,6 @@ namespace WinAppBar
 
         private const int ABM_GETTASKBARPOS = 5;
 
-
         private static Rectangle GetTaskbarPosition()
         {
             APPBARDATA data = new APPBARDATA();
@@ -249,11 +240,15 @@ namespace WinAppBar
         {
             return GetColourAt(GetTaskbarPosition().Location);
         }
-        #endregion
+
+        #endregion Application bar methods
+
+        private readonly IPluginLoader pluginLoader;
 
         public MainForm()
         {
             this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            pluginLoader = new PluginLoader();
             InitializeComponent();
         }
 
@@ -264,22 +259,26 @@ namespace WinAppBar
             RegisterBar();
             this.FormClosing += MainForm_FormClosing;
 
-            IPluginLoader pluginLoader = new PluginLoader();
-            var plugins =  pluginLoader.LoadPlugins(this);
-            foreach(var plugin in plugins)
+            var plugins = pluginLoader.LoadPlugins(this);
+            foreach (var plugin in plugins)
                 plugin.ApplicationExit += Plugin_ApplicationExit;
+        }
+
+        private async void ExitApplication()
+        {
+            await pluginLoader.SavePlugins(this);
+            RegisterBar();
+            Process.GetCurrentProcess().Kill();
         }
 
         private void Plugin_ApplicationExit(object? sender, EventArgs e)
         {
-            RegisterBar();
-            Process.GetCurrentProcess().Kill();
+            ExitApplication();
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            RegisterBar();
-            Process.GetCurrentProcess().Kill();
+            ExitApplication();
         }
     }
 }

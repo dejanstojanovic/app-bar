@@ -15,9 +15,10 @@ namespace WinAppBar.Plugins.Shortcuts
                 Resize();
             }
         }
+        public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
+        public bool ShowLabel { get=>_label.Visible; }
 
         readonly ToolTip toolTip;
-        public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
         readonly Label _label;
         readonly PictureBox _pictureBox;
 

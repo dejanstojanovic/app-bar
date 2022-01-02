@@ -10,5 +10,6 @@ namespace WinAppBar
     internal interface IPluginLoader
     {
         IEnumerable<IPlugin> LoadPlugins(Form host);
+        Task SavePlugins(Form host);
     }
 }

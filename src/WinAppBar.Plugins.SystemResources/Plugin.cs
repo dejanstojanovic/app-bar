@@ -119,6 +119,9 @@ namespace WinAppBar.Plugins.SystemResources
                 control.BackColor = accentColor;
         }
 
-
+        public async Task SaveConfig()
+        {
+            await Task.CompletedTask;
+        }
     }
 }

@@ -29,5 +29,11 @@ namespace WinAppBar
 
             return plugins;
         }
+
+        public async Task SavePlugins(Form host)
+        {
+            foreach (IPlugin plugin in host.Controls)
+                await plugin.SaveConfig();
+        }
     }
 }
