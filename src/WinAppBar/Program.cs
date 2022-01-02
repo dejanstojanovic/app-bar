@@ -14,7 +14,11 @@ namespace WinAppBar
             if (canCreateInstance)
             {
                 ApplicationConfiguration.Initialize();
+
+                Application.SetHighDpiMode(HighDpiMode.SystemAware);
                 Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
                 Application.Run(new MainForm());
 
                 mutex.ReleaseMutex();

@@ -1,4 +1,8 @@
-﻿namespace WinAppBar.Plugins.Shortcuts
+﻿using System.Diagnostics;
+using WinAppBar.Plugins.Shortcuts.Extensions;
+using System.Linq;
+
+namespace WinAppBar.Plugins.Shortcuts
 {
     internal class Shortcut : Panel
     {
@@ -13,9 +17,8 @@
         }
 
         public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
-
-        private Label _label;
-        private PictureBox _pictureBox;
+        readonly Label _label;
+        readonly PictureBox _pictureBox;
 
         public Shortcut(string path)
         {
@@ -47,7 +50,60 @@
             _label.Left = _pictureBox.Left + _pictureBox.Width;
             _label.TextChanged += _label_TextChanged;
 
+
             this.Controls.Add(_label);
+
+       
+
+
+            foreach (Control control in this.Controls)
+            {
+                control.MouseEnter += Shortcut_MouseEnter;
+                control.MouseLeave += Shortcut_MouseLeave;
+                control.Click += Shortcut_Click;
+            }
+
+            this.MouseEnter += Shortcut_MouseEnter;
+            this.MouseLeave += Shortcut_MouseLeave;
+            this.Click += Shortcut_Click;
+
+
+        }
+
+        public void OpenShortcut()
+        {
+            var path = this.Tag!=null ? this.Tag.ToString() : null;
+            if (string.IsNullOrEmpty(path))
+                return;
+            var processInfo = new ProcessStartInfo();
+            var executables = new String[] { ".exe", ".com", ".bat" };
+            if (path.IsDirectory() ||
+                !executables.Any(e => e.Equals(Path.GetExtension(path), StringComparison.InvariantCultureIgnoreCase)))
+            {
+                processInfo.FileName = path;
+                processInfo.UseShellExecute = true;
+            }
+            else
+            {
+                processInfo.FileName = path;
+                processInfo.UseShellExecute = false;
+            }
+
+            Process.Start(processInfo);
+
+            this.Shortcut_MouseLeave(this, null);
+        }
+
+        public void Unfocus()
+        {
+            if (this.BackColor != Color.Transparent || 
+                this.Controls.Cast<Control>().Any(c => c.BackColor != Color.Transparent))
+            {
+                foreach (Control control in this.Controls)
+                    control.BackColor = Color.Transparent;
+
+                this.BackColor = Color.Transparent;
+            }
         }
 
         private void Resize()
@@ -87,6 +143,37 @@
         {
             this.Resize();
         }
+
+        private void Shortcut_MouseLeave(object? sender, EventArgs e)
+        {
+            if (this.ClientRectangle.Contains(this.PointToClient(Control.MousePosition)))
+                return;
+            else
+            {
+                Unfocus();
+            }
+
+        }
+
+        private void Shortcut_MouseEnter(object? sender, EventArgs e)
+        {
+            var accentColor = ColorUtils.GetAccentColor();
+            foreach (Control control in this.Controls)
+                control.BackColor = accentColor;
+
+            this.BackColor = accentColor;
+            
+        }
+
+        private void Shortcut_Click(object? sender, EventArgs e)
+        {
+            MouseEventArgs args = (MouseEventArgs)e;
+            if (args != null && args.Button == MouseButtons.Right)
+                return;
+
+            OpenShortcut(); 
+        }
+
 
     }
 }

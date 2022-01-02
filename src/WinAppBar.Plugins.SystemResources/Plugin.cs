@@ -116,7 +116,7 @@ namespace WinAppBar.Plugins.SystemResources
             var accentColor = ColorUtils.GetAccentColor();
             var control = sender as Label;
             if (control != null)
-                control.BackColor = Color.FromArgb(accentColor.a, accentColor.r, accentColor.g, accentColor.b);
+                control.BackColor = accentColor;
         }
 
 

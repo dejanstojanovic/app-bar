@@ -11,7 +11,7 @@ namespace WinAppBar.Plugins
     {
         #region Win API
 
-        public static (Byte r, Byte g, Byte b, Byte a) GetAccentColor()
+        public static Color GetAccentColor()
         {
             const String DWM_KEY = @"Software\Microsoft\Windows\DWM";
             using (RegistryKey dwmKey = Registry.CurrentUser.OpenSubKey(DWM_KEY, RegistryKeyPermissionCheck.ReadSubTree))
@@ -22,7 +22,8 @@ namespace WinAppBar.Plugins
                 Object accentColorObj = dwmKey.GetValue("AccentColor");
                 if (accentColorObj is Int32 accentColorDword)
                 {
-                    return ParseDWordColor(accentColorDword);
+                    var parsed =  ParseDWordColor(accentColorDword);
+                    return Color.FromArgb(parsed.a, parsed.r, parsed.g, parsed.b);
                 }
                 else
                 {

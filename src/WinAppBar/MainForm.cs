@@ -253,6 +253,7 @@ namespace WinAppBar
 
         public MainForm()
         {
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             InitializeComponent();
         }
 

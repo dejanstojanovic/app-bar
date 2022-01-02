@@ -31,6 +31,8 @@ namespace WinAppBar.Plugins.Shortcuts
                 ShowAlways = true
             };
 
+
+            #region Main ContextMenu
             contextMenuStripMain = new ContextMenuStrip()
             {
                 RenderMode = ToolStripRenderMode.System,
@@ -43,7 +45,9 @@ namespace WinAppBar.Plugins.Shortcuts
                 }, "Exit");
             contextMenuStripMain.Items.Add(exitToolStripMenuItem);
             this.ContextMenuStrip = contextMenuStripMain;
+            #endregion
 
+            #region Shortcut ContextMenu
 
             contextMenuStripShortcut = new ContextMenuStrip()
             {
@@ -55,9 +59,9 @@ namespace WinAppBar.Plugins.Shortcuts
                 var item = sender as ToolStripMenuItem;
                 if (item != null)
                 {
-                    var sourceControl = item.GetSourceControl();
+                    var sourceControl = item.GetSourceControl() as Shortcut;
                     if (sourceControl != null)
-                        Shortcut_Click(sourceControl, new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+                        sourceControl.OpenShortcut();
                 }
             }, "Open"));
             contextMenuStripShortcut.Items.Add(
@@ -68,13 +72,28 @@ namespace WinAppBar.Plugins.Shortcuts
                 {
                     var sourceControl = item.GetSourceControl();
                     if (sourceControl != null)
+                    {
                         sourceControl.Parent.Controls.Remove(sourceControl);
+                        ReArrangeShortcuts();
+                    }
                 }
 
             }, "Remove"));
 
+            contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
+            #endregion
         }
 
+        private void ContextMenuStripShortcut_Closing(object? sender, ToolStripDropDownClosingEventArgs e)
+        {
+            var contextMenu = sender as ContextMenuStrip;
+            if (contextMenu == null)
+                return;
+
+            var sourceControl = contextMenu.SourceControl as Shortcut;
+            if (sourceControl != null)
+                sourceControl.Unfocus();
+        }
 
         private void Plugin_DragOver(object? sender, DragEventArgs e)
         {
@@ -96,41 +115,44 @@ namespace WinAppBar.Plugins.Shortcuts
             LoadShortcuts(files);
         }
 
-        private bool IsDirectory(string path)
+        private void ReArrangeShortcuts()
         {
-            FileAttributes attr = File.GetAttributes(path);
-            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-                return true;
-
-            return false;
-
+            this.SuspendLayout();
+            var left = 4;
+            foreach (Control control in this.Controls)
+            {
+                control.Left = left;
+                left += control.Width + 4;   
+            }
+            
+            this.ResumeLayout();
         }
 
-        private void LoadShortcuts(IEnumerable<string> files)
+        private void LoadShortcuts(IEnumerable<string> paths)
         {
             var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
 
-            foreach (var file in files)
+            foreach (var path in paths)
             {
                 Icon icon = null;
-                if (IsDirectory(file))
-                    icon = IconTools.GetIconForFile(file, ShellIconSize.SmallIcon);
+                if (path.IsDirectory())
+                    icon = IconTools.GetIconForFile(path, ShellIconSize.SmallIcon);
                 else
                 {
-                    var extension = Path.GetExtension(file);
+                    var extension = Path.GetExtension(path);
                     icon = fileExtensionsWithIcons.Any(e => e.Equals(extension)) ?
-                        IconTools.GetIconForFile(file, ShellIconSize.SmallIcon) :
+                        IconTools.GetIconForFile(path, ShellIconSize.SmallIcon) :
                         IconTools.GetIconForExtension(extension, ShellIconSize.SmallIcon);
                 }
 
                 if (icon != null)
                 {
-                    var shortcut = new Shortcut(file)
+                    var shortcut = new Shortcut(path)
                     {
                         Icon = icon.ToBitmap(),
-                        Label = Path.GetFileName(file),
+                        Label = Path.GetFileName(path),
                         Top = 4,
-                        Tag = file
+                        Tag = path
                     };
 
                     var left = 4;
@@ -140,12 +162,9 @@ namespace WinAppBar.Plugins.Shortcuts
                     }
                     shortcut.Left = left;
 
-                    shortcut.MouseEnter += Shortcut_MouseEnter;
-                    shortcut.MouseLeave += Shortcut_MouseLeave;
                     shortcut.MouseHover += Shortcut_MouseHover;
-                    shortcut.Click += Shortcut_Click;
+                    
                     shortcut.ContextMenuStrip = contextMenuStripShortcut;
-
 
                     this.Controls.Add(shortcut);
 
@@ -163,50 +182,6 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
 
-        private void Shortcut_Click(object? sender, EventArgs e)
-        {
-            MouseEventArgs args = (MouseEventArgs)e;
-            if (args != null && args.Button == MouseButtons.Right)
-                return;
 
-            var control = sender as Shortcut;
-            if (control == null)
-                return;
-
-            var path = control.Tag.ToString();
-            if (string.IsNullOrEmpty(path))
-                return;
-
-            var processInfo = new ProcessStartInfo();
-            var executables = new String[] { ".exe", ".com", ".bat" };
-            if (IsDirectory(path) ||
-                !executables.Any(e => e.Equals(Path.GetExtension(path), StringComparison.InvariantCultureIgnoreCase)))
-            {
-                processInfo.FileName = path;
-                processInfo.UseShellExecute = true;
-            }
-            else
-            {
-                processInfo.FileName = path;
-                processInfo.UseShellExecute = false;
-            }
-
-            Process.Start(processInfo);
-        }
-
-        private void Shortcut_MouseLeave(object? sender, EventArgs e)
-        {
-            var control = sender as Control;
-            if (control != null)
-                control.BackColor = Color.Transparent;
-        }
-
-        private void Shortcut_MouseEnter(object? sender, EventArgs e)
-        {
-            var accentColor = ColorUtils.GetAccentColor();
-            var control = sender as Control;
-            if (control != null)
-                control.BackColor = Color.FromArgb(accentColor.a, accentColor.r, accentColor.g, accentColor.b);
-        }
     }
 }
