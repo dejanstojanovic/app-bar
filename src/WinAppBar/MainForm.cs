@@ -1,62 +1,21 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using WinAppBar.Extensions;
 
 namespace WinAppBar
 {
-    partial class Main
+    public partial class MainForm : Form
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.SuspendLayout();
-            // 
-            // 
-            // Main
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(800, 39);
-            this.ControlBox = false;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "Main";
-            this.ShowInTaskbar = false;
-            this.Text = "Main";
-            this.TopMost = true;
-            this.Load += new System.EventHandler(this.Main_Load);
-            this.FormClosing += Main_FormClosing;
-            this.ResumeLayout(false);
-
-        }
-
-        #endregion
-
-
         #region Application bar methods
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
@@ -239,7 +198,7 @@ namespace WinAppBar
             base.WndProc(ref m);
         }
 
-        protected override System.Windows.Forms.CreateParams CreateParams
+        protected override CreateParams CreateParams
         {
             get
             {
@@ -292,5 +251,34 @@ namespace WinAppBar
         }
         #endregion
 
+        public MainForm()
+        {
+            InitializeComponent();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            this.BackColor = GetTaskbarColor();
+            this.EnableAcrylic(this.BackColor);
+            RegisterBar();
+            this.FormClosing += MainForm_FormClosing;
+
+            IPluginLoader pluginLoader = new PluginLoader();
+            var plugins =  pluginLoader.LoadPlugins(this);
+            foreach(var plugin in plugins)
+                plugin.ApplicationExit += Plugin_ApplicationExit;
+        }
+
+        private void Plugin_ApplicationExit(object? sender, EventArgs e)
+        {
+            RegisterBar();
+            Process.GetCurrentProcess().Kill();
+        }
+
+        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            RegisterBar();
+            Process.GetCurrentProcess().Kill();
+        }
     }
 }

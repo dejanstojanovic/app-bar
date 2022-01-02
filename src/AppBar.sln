@@ -5,6 +5,12 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinAppBar", "WinAppBar\WinAppBar.csproj", "{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinAppBar.Plugins.Shortcuts", "WinAppBar.Shortcuts\WinAppBar.Plugins.Shortcuts.csproj", "{D6D5CC0B-15C9-47BE-8C51-438032A7C7F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinAppBar.Plugins", "WinAppBar.Plugins\WinAppBar.Plugins.csproj", "{60E66E08-831A-4E6F-AB71-E2063477FA0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAppBar.Plugins.SystemResources", "WinAppBar.Plugins.SystemResources\WinAppBar.Plugins.SystemResources.csproj", "{2EFA0CC3-2549-4D94-BB50-0E1563F045FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A199B1A-7FD0-4F5A-86FE-D3D31AD057C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6D5CC0B-15C9-47BE-8C51-438032A7C7F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6D5CC0B-15C9-47BE-8C51-438032A7C7F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6D5CC0B-15C9-47BE-8C51-438032A7C7F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6D5CC0B-15C9-47BE-8C51-438032A7C7F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60E66E08-831A-4E6F-AB71-E2063477FA0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60E66E08-831A-4E6F-AB71-E2063477FA0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60E66E08-831A-4E6F-AB71-E2063477FA0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60E66E08-831A-4E6F-AB71-E2063477FA0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EFA0CC3-2549-4D94-BB50-0E1563F045FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EFA0CC3-2549-4D94-BB50-0E1563F045FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EFA0CC3-2549-4D94-BB50-0E1563F045FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EFA0CC3-2549-4D94-BB50-0E1563F045FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
