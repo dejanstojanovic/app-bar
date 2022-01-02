@@ -26,9 +26,9 @@ namespace WinAppBar.Plugins.SystemResources
             label.Padding = new Padding(0, 0, 5, 0);
             label.Text = $"CPU: %";
 
-            label.MouseEnter += Label_MouseEnter;
-            label.MouseLeave += Label_MouseLeave;
-            label.Click += Label_Click;
+            //label.MouseEnter += Label_MouseEnter;
+            //label.MouseLeave += Label_MouseLeave;
+            //label.Click += Label_Click;
 
             this.Controls.Add(label);
 
