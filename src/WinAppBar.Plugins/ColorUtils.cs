@@ -43,6 +43,11 @@ namespace WinAppBar.Plugins
             }
         }
 
+        public static Color GetTextColor()
+        {
+            return SystemColors.InactiveCaption;
+        }
+
         #endregion Win API
     }
 }

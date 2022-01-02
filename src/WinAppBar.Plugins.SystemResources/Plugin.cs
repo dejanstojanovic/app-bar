@@ -20,7 +20,7 @@ namespace WinAppBar.Plugins.SystemResources
 
             label = new Label();
             label.Dock = DockStyle.Fill;
-            label.ForeColor = SystemColors.InactiveCaption;
+            label.ForeColor = ColorUtils.GetTextColor();
 
             label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             label.Padding = new Padding(0, 0, 5, 0);

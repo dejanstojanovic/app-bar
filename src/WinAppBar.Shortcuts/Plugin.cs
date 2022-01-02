@@ -125,24 +125,30 @@ namespace WinAppBar.Plugins.Shortcuts
 
                 if (icon != null)
                 {
-                    var pictureBox = new PictureBox()
-                    {
-                        Image = icon.ToBitmap(),
-                        Size = new Size(24, 24),
-                        Padding = new Padding(4),
-                        Top = 5,
-                        Tag = file
-                    };
-                    pictureBox.Left = 5 + (this.Controls.Count * pictureBox.Width) + (this.Controls.Count * 2);
+                    var shortcut = new Shortcut(file);
+                    shortcut.Icon = icon.ToBitmap();
+                    shortcut.Label = Path.GetFileName(file);
 
-                    pictureBox.MouseEnter += PictureBox_MouseEnter;
-                    pictureBox.MouseLeave += PictureBox_MouseLeave;
-                    pictureBox.MouseHover += PictureBox_MouseHover;
-                    pictureBox.Click += PictureBox_Click;
+                    this.Controls.Add(shortcut);
 
-                    this.Controls.Add(pictureBox);
+                    //var pictureBox = new PictureBox()
+                    //{
+                    //    Image = icon.ToBitmap(),
+                    //    Size = new Size(24, 24),
+                    //    Padding = new Padding(4),
+                    //    Top = 5,
+                    //    Tag = file
+                    //};
+                    //pictureBox.Left = 5 + (this.Controls.Count * pictureBox.Width) + (this.Controls.Count * 2);
 
-                    pictureBox.ContextMenuStrip = contextMenuStripShortcut;
+                    //pictureBox.MouseEnter += PictureBox_MouseEnter;
+                    //pictureBox.MouseLeave += PictureBox_MouseLeave;
+                    //pictureBox.MouseHover += PictureBox_MouseHover;
+                    //pictureBox.Click += PictureBox_Click;
+
+                    //this.Controls.Add(pictureBox);
+
+                    //pictureBox.ContextMenuStrip = contextMenuStripShortcut;
                 }
             }
         }
