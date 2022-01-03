@@ -82,6 +82,10 @@ namespace WinAppBar
 
         private int uCallBack;
 
+        [DllImport("User32.dll")]
+        private static extern long LockWindowUpdate(IntPtr Handle);
+
+
         protected void RegisterBar()
         {
             APPBARDATA abd = new APPBARDATA();
@@ -258,7 +262,10 @@ namespace WinAppBar
             this.EnableAcrylic(this.BackColor);
             RegisterBar();
             this.FormClosing += MainForm_FormClosing;
+
+            //LockWindowUpdate(this.Handle);
             var plugins = pluginLoader.LoadPlugins(this);
+            //LockWindowUpdate(IntPtr.Zero);
             foreach (var plugin in plugins)
                 plugin.ApplicationExit += Plugin_ApplicationExit;
         }
