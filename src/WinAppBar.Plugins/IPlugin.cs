@@ -4,6 +4,5 @@
     {
         event EventHandler ApplicationExit;
         Task SaveConfig();
-        Task<String> LoadConfig();
     }
 }

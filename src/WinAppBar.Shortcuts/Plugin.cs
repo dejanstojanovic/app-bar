@@ -93,7 +93,10 @@ namespace WinAppBar.Plugins.Shortcuts
 
             if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath) && File.Exists(this.ConfigurationFilePath))
             {
-                var configurationContent = this.LoadConfig().Result;
+                string configurationContent = null;
+                if (File.Exists(ConfigurationFilePath))
+                    configurationContent = File.ReadAllText(ConfigurationFilePath);
+
                 var configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
 
                 if (configuration != null)
@@ -106,6 +109,7 @@ namespace WinAppBar.Plugins.Shortcuts
             #endregion
         }
 
+        #region Event handle methods
 
         private void ContextMenuStripShortcut_Closing(object? sender, ToolStripDropDownClosingEventArgs e)
         {
@@ -137,6 +141,8 @@ namespace WinAppBar.Plugins.Shortcuts
 
             LoadShortcuts(files, this.ShowLabels);
         }
+
+        #endregion
 
         private void ReArrangeShortcuts()
         {

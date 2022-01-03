@@ -22,13 +22,7 @@ namespace WinAppBar.Plugins
 
         public abstract Task SaveConfig();
 
-        public async Task<string> LoadConfig()
-        {
-            if (File.Exists(ConfigurationFilePath))
-                return await File.ReadAllTextAsync(ConfigurationFilePath);
 
-            return null;
-        }
 
     }
 }
