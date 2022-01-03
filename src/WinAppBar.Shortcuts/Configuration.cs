@@ -10,6 +10,11 @@ namespace WinAppBar.Plugins.Shortcuts
     {
         public bool ShowLabels { get; set; }
         public IEnumerable<ShortcutConfiguration> Shortcuts { get; set; }
+
+        public Configuration()
+        {
+            this.ShowLabels = true;
+        }
     }
 
     class ShortcutConfiguration

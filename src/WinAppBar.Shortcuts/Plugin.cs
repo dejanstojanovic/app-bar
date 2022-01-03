@@ -29,7 +29,7 @@ namespace WinAppBar.Plugins.Shortcuts
             contextMenuStripMain.Items.Add(new ToolStripMenuItem("Show/hide labels", null,
                 (sender, e) =>
                 {
-                    this.ShowLabels=!this.ShowLabels;
+                    this.ShowLabels = !this.ShowLabels;
                     foreach (Shortcut shortcut in this.Controls)
                     {
                         //shortcut.ToggleLabel();
@@ -106,6 +106,7 @@ namespace WinAppBar.Plugins.Shortcuts
             #endregion
         }
 
+
         private void ContextMenuStripShortcut_Closing(object? sender, ToolStripDropDownClosingEventArgs e)
         {
             var contextMenu = sender as ContextMenuStrip;
@@ -154,7 +155,10 @@ namespace WinAppBar.Plugins.Shortcuts
         {
             var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
 
-            foreach (var path in paths)
+            foreach (var path in paths.Where(p =>
+                                !string.IsNullOrWhiteSpace(p) &&
+                                (File.Exists(p) || Directory.Exists(p))
+            ).ToArray())
             {
                 Icon icon = null;
                 if (path.IsDirectory())

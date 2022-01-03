@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="cpu.png" />
+    <None Remove="ram.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="cpu.png" />
+    <EmbeddedResource Include="ram.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WinAppBar.Plugins\WinAppBar.Plugins.csproj" />
   </ItemGroup>
 
