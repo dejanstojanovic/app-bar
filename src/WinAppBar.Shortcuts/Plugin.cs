@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Reflection;
 using WinAppBar.Plugins;
 using WinAppBar.Plugins.Shortcuts.Extensions;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace WinAppBar.Plugins.Shortcuts
 {
@@ -11,8 +13,10 @@ namespace WinAppBar.Plugins.Shortcuts
 
         readonly ContextMenuStrip contextMenuStripMain;
         readonly ContextMenuStrip contextMenuStripShortcut;
+        readonly String _configPath;
 
         public event EventHandler ApplicationExit = null;
+        public bool ShowLabels { get; set; }
 
         public Plugin() : base()
         {
@@ -30,12 +34,17 @@ namespace WinAppBar.Plugins.Shortcuts
             contextMenuStripMain.Items.Add(new ToolStripMenuItem("Show/hide labels", null,
                 (sender, e) =>
                 {
-                   foreach(Shortcut shortcut in this.Controls)
+                    this.ShowLabels=!this.ShowLabels;
+                    foreach (Shortcut shortcut in this.Controls)
                     {
-                        shortcut.ToggleLabel();
-                        this.ReArrangeShortcuts();
+                        //shortcut.ToggleLabel();
+                        if (this.ShowLabels)
+                            shortcut.ShowLabel();
+                        else
+                            shortcut.HideLabel();
                     }
-                }, "Exit"));
+                    this.ReArrangeShortcuts();
+                }, "ShowHide"));
 
             contextMenuStripMain.Items.Add("-");
 
@@ -83,6 +92,26 @@ namespace WinAppBar.Plugins.Shortcuts
 
             contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
             #endregion
+
+
+            #region Load configuration
+
+            _configPath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                $"{this.GetType().Assembly.GetName().Name}.json");
+
+            if ((_configPath.IsDirectory() && Directory.Exists(_configPath)) || (!_configPath.IsDirectory() && File.Exists(_configPath)))
+            {
+                var configurationContent = File.ReadAllText(_configPath);
+                var configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
+
+                if (configuration != null)
+                    ShowLabels = configuration.ShowLabels;
+
+                if (configuration?.Shortcuts != null && configuration.Shortcuts.Any())
+                    LoadShortcuts(configuration.Shortcuts.Select(s => s.Path).ToArray(), configuration.ShowLabels);
+            }
+            #endregion
         }
 
         private void ContextMenuStripShortcut_Closing(object? sender, ToolStripDropDownClosingEventArgs e)
@@ -113,7 +142,7 @@ namespace WinAppBar.Plugins.Shortcuts
             if (files == null || !files.Any())
                 return;
 
-            LoadShortcuts(files);
+            LoadShortcuts(files, this.ShowLabels);
         }
 
         private void ReArrangeShortcuts()
@@ -123,13 +152,13 @@ namespace WinAppBar.Plugins.Shortcuts
             foreach (Control control in this.Controls)
             {
                 control.Left = left;
-                left += control.Width + 4;   
+                left += control.Width + 4;
             }
-            
+
             this.ResumeLayout();
         }
 
-        private void LoadShortcuts(IEnumerable<string> paths)
+        private void LoadShortcuts(IEnumerable<string> paths, bool showLabel)
         {
             var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
 
@@ -156,32 +185,44 @@ namespace WinAppBar.Plugins.Shortcuts
                         Tag = path
                     };
 
+                    if (showLabel)
+                        shortcut.ShowLabel();
+                    else
+                        shortcut.HideLabel();
+
                     var left = 4;
-                    foreach(Control control  in this.Controls)
+                    foreach (Control control in this.Controls)
                     {
                         left += control.Width + 4;
                     }
                     shortcut.Left = left;
-                   
                     shortcut.ContextMenuStrip = contextMenuStripShortcut;
-
                     this.Controls.Add(shortcut);
 
-                   
+
                 }
             }
         }
 
         public async Task SaveConfig()
         {
-            var configPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
-                $"{this.GetType().Assembly.GetName().Name}.json");
-
+            var shortcutControls = this.Controls.Cast<Shortcut>();
             var configuration = new Configuration()
             {
-                //ShowLabels = this.Controls.Cast<Shortcut>,
+                ShowLabels = this.ShowLabels,
+                Shortcuts = shortcutControls.Select(c => new ShortcutConfiguration()
+                {
+                    Path = c.Tag.ToString()
+                })
             };
+            var configContent = JsonSerializer.Serialize<Configuration>(
+                 configuration,
+                 new JsonSerializerOptions()
+                 {
+                     WriteIndented = true
+                 });
+
+            await File.WriteAllTextAsync(path: _configPath, configContent);
         }
     }
 }

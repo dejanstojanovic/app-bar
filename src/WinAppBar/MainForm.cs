@@ -258,7 +258,6 @@ namespace WinAppBar
             this.EnableAcrylic(this.BackColor);
             RegisterBar();
             this.FormClosing += MainForm_FormClosing;
-
             var plugins = pluginLoader.LoadPlugins(this);
             foreach (var plugin in plugins)
                 plugin.ApplicationExit += Plugin_ApplicationExit;

@@ -16,7 +16,7 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
         public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
-        public bool ShowLabel { get=>_label.Visible; }
+        
 
         readonly ToolTip toolTip;
         readonly Label _label;
@@ -79,6 +79,16 @@ namespace WinAppBar.Plugins.Shortcuts
 
         }
 
+        public void ShowLabel()
+        {
+            this._label.Visible = true;
+            this.Resize();
+        }
+        public void HideLabel()
+        {
+            this._label.Visible = false;
+            this.Resize();
+        }
         public void OpenShortcut()
         {
             var path = this.Tag != null ? this.Tag.ToString() : null;
