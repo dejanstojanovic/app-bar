@@ -4,9 +4,9 @@ using System.Windows.Forms.VisualStyles;
 
 namespace WinAppBar.Plugins.SystemResources
 {
-    public class Plugin : Panel, IPlugin
+    public class Plugin : PluginBase
     {
-        public event EventHandler ApplicationExit;
+        public override event EventHandler ApplicationExit;
 
         readonly Label label;
         readonly Forms.Timer timer;
@@ -119,7 +119,7 @@ namespace WinAppBar.Plugins.SystemResources
                 control.BackColor = accentColor;
         }
 
-        public async Task SaveConfig()
+        public override async Task SaveConfig()
         {
             await Task.CompletedTask;
         }

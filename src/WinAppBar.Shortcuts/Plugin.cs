@@ -1,21 +1,16 @@
-﻿using Microsoft.Win32;
-using System.Diagnostics;
-using System.Reflection;
-using WinAppBar.Plugins;
+﻿using System.Reflection;
 using WinAppBar.Plugins.Shortcuts.Extensions;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace WinAppBar.Plugins.Shortcuts
 {
-    public class Plugin : Panel, IPlugin
+    public class Plugin : PluginBase
     {
 
         readonly ContextMenuStrip contextMenuStripMain;
         readonly ContextMenuStrip contextMenuStripShortcut;
-        readonly String _configPath;
 
-        public event EventHandler ApplicationExit = null;
+        public override event EventHandler ApplicationExit = null;
         public bool ShowLabels { get; set; }
 
         public Plugin() : base()
@@ -96,13 +91,9 @@ namespace WinAppBar.Plugins.Shortcuts
 
             #region Load configuration
 
-            _configPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                $"{this.GetType().Assembly.GetName().Name}.json");
-
-            if ((_configPath.IsDirectory() && Directory.Exists(_configPath)) || (!_configPath.IsDirectory() && File.Exists(_configPath)))
+            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath) && File.Exists(this.ConfigurationFilePath))
             {
-                var configurationContent = File.ReadAllText(_configPath);
+                var configurationContent = this.LoadConfig().Result;
                 var configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
 
                 if (configuration != null)
@@ -111,6 +102,7 @@ namespace WinAppBar.Plugins.Shortcuts
                 if (configuration?.Shortcuts != null && configuration.Shortcuts.Any())
                     LoadShortcuts(configuration.Shortcuts.Select(s => s.Path).ToArray(), configuration.ShowLabels);
             }
+
             #endregion
         }
 
@@ -122,7 +114,7 @@ namespace WinAppBar.Plugins.Shortcuts
 
             var sourceControl = contextMenu.SourceControl as Shortcut;
             if (sourceControl != null)
-                sourceControl.Unfocus();
+                sourceControl.UnHiglight();
         }
 
         private void Plugin_DragOver(object? sender, DragEventArgs e)
@@ -204,7 +196,7 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
 
-        public async Task SaveConfig()
+        public async override Task SaveConfig()
         {
             var shortcutControls = this.Controls.Cast<Shortcut>();
             var configuration = new Configuration()
@@ -222,7 +214,8 @@ namespace WinAppBar.Plugins.Shortcuts
                      WriteIndented = true
                  });
 
-            await File.WriteAllTextAsync(path: _configPath, configContent);
+            await File.WriteAllTextAsync(path: this.ConfigurationFilePath, configContent);
         }
+
     }
 }

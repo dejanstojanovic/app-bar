@@ -12,7 +12,7 @@ namespace WinAppBar.Plugins.Shortcuts
             set
             {
                 _label.Text = value;
-                Resize();
+                SetSizes();
             }
         }
         public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
@@ -82,12 +82,12 @@ namespace WinAppBar.Plugins.Shortcuts
         public void ShowLabel()
         {
             this._label.Visible = true;
-            this.Resize();
+            this.SetSizes();
         }
         public void HideLabel()
         {
             this._label.Visible = false;
-            this.Resize();
+            this.SetSizes();
         }
         public void OpenShortcut()
         {
@@ -113,7 +113,7 @@ namespace WinAppBar.Plugins.Shortcuts
             this.Shortcut_MouseLeave(this, null);
         }
 
-        public void Unfocus()
+        public void UnHiglight()
         {
             if (this.BackColor != Color.Transparent ||
                 this.Controls.Cast<Control>().Any(c => c.BackColor != Color.Transparent))
@@ -125,7 +125,7 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
 
-        private void Resize()
+        private void SetSizes()
         {
             this.Height = _pictureBox.Height;
             var width = _pictureBox.Width;
@@ -144,7 +144,7 @@ namespace WinAppBar.Plugins.Shortcuts
         public void ToggleLabel()
         {
             _label.Visible = !_label.Visible;
-            Resize();
+            SetSizes();
         }
 
         public static int MeasureDisplayStringWidth(Graphics graphics, string text,
@@ -167,7 +167,7 @@ namespace WinAppBar.Plugins.Shortcuts
 
         private void _label_TextChanged(object? sender, EventArgs e)
         {
-            this.Resize();
+            this.SetSizes();
         }
 
         private void Shortcut_MouseLeave(object? sender, EventArgs e)
@@ -176,7 +176,7 @@ namespace WinAppBar.Plugins.Shortcuts
                 return;
             else
             {
-                Unfocus();
+                UnHiglight();
             }
 
         }
