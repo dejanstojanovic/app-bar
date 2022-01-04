@@ -9,28 +9,53 @@ namespace WinAppBar.Plugins.SystemResources
         public override event EventHandler ApplicationExit;
 
         readonly Label label;
+        readonly PictureBox pictureBox;
         readonly Forms.Timer timer;
         readonly PerformanceCounter cpuCounter;
         readonly ContextMenuStrip contextMenuStripMain;
 
         public Plugin() : base()
         {
-            this.Width = 90;
+            this.Width = 65;
             this.Dock = DockStyle.Right;
 
-            label = new Label();
-            label.Dock = DockStyle.Fill;
-            label.ForeColor = ColorUtils.GetTextColor();
+            label = new Label()
+            {
+                Dock = DockStyle.Right,
+                ForeColor = ColorUtils.GetTextColor(),
+                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                Padding = new Padding(0, 0, 5, 0),
+                Text = $"100.00%",
+                Width = 45
+            };
 
-            label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            label.Padding = new Padding(0, 0, 5, 0);
-            label.Text = $"CPU: %";
+            this.Controls.Add(label);
+
+            pictureBox = new PictureBox() 
+            {
+                Width = 16,
+                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.cpu.png")),
+                SizeMode = PictureBoxSizeMode.CenterImage,
+                Dock = DockStyle.Left 
+            };
+
+            this.Controls.Add(pictureBox);
+            pictureBox.BringToFront();
 
             //label.MouseEnter += Label_MouseEnter;
             //label.MouseLeave += Label_MouseLeave;
             //label.Click += Label_Click;
 
-            this.Controls.Add(label);
+            cpuCounter = new PerformanceCounter();
+            cpuCounter.CategoryName = "Processor";
+            cpuCounter.CounterName = "% Processor Time";
+            cpuCounter.InstanceName = "_Total";
+            cpuCounter.ReadOnly = true;
+            timer = new Forms.Timer();
+            timer.Interval = 1000;
+            timer.Tick += Timer_Tick;
+            Timer_Tick(timer, new EventArgs());
+            //timer.Start();
 
             contextMenuStripMain = new ContextMenuStrip()
             {
@@ -38,15 +63,15 @@ namespace WinAppBar.Plugins.SystemResources
             };
             contextMenuStripMain.Items.Add(new ToolStripMenuItem("Resource Monitor", null,
                 (sender, e) =>
-                {
-                    var windowsFolder = Environment.GetEnvironmentVariable("windir");
-                    Process p = new Process();
-                    p.StartInfo.WorkingDirectory = Path.Combine(windowsFolder, "System32");
-                    p.StartInfo.FileName = Path.Combine(windowsFolder, "System32", "mmc.exe");
-                    p.StartInfo.Arguments = Path.Combine(windowsFolder, "System32", "perfmon.msc") + " /s";
-                    p.StartInfo.UseShellExecute = true;
-                    p.Start();
-                }, "ResourceMonitor"));
+                    {
+                        var windowsFolder = Environment.GetEnvironmentVariable("windir");
+                        Process p = new Process();
+                        p.StartInfo.WorkingDirectory = Path.Combine(windowsFolder, "System32");
+                        p.StartInfo.FileName = Path.Combine(windowsFolder, "System32", "mmc.exe");
+                        p.StartInfo.Arguments = Path.Combine(windowsFolder, "System32", "perfmon.msc") + " /s";
+                        p.StartInfo.UseShellExecute = true;
+                        p.Start();
+                    }, "ResourceMonitor"));
 
             contextMenuStripMain.Items.Add(new ToolStripMenuItem("Task Manager", null,
                 (sender, e) =>
@@ -66,21 +91,10 @@ namespace WinAppBar.Plugins.SystemResources
                         this.ApplicationExit.Invoke(this, EventArgs.Empty);
                 }, "Exit"));
 
-
-
             this.ContextMenuStrip = contextMenuStripMain;
 
 
-            cpuCounter = new PerformanceCounter();
-            cpuCounter.CategoryName = "Processor";
-            cpuCounter.CounterName = "% Processor Time";
-            cpuCounter.InstanceName = "_Total";
-            cpuCounter.ReadOnly = true;
-            timer = new Forms.Timer();
-            timer.Interval = 1000;
-            timer.Tick += Timer_Tick;
-            Timer_Tick(timer, new EventArgs());
-            timer.Start();
+
         }
 
         private async void Timer_Tick(object? sender, EventArgs e)
@@ -92,7 +106,7 @@ namespace WinAppBar.Plugins.SystemResources
                 unused = cpuCounter.NextValue();
                 return Math.Round(unused, 2);
             });
-            this.label.Text = $"CPU: {cpu}%";
+            this.label.Text = $"{cpu}%";
         }
 
         private void Label_Click(object? sender, EventArgs e)
