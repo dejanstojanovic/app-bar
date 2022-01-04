@@ -196,44 +196,6 @@ namespace WinAppBar
             }
         }
 
-        //private const int ABM_GETTASKBARPOS = 5;
-
-        //private static Rectangle GetTaskbarPosition()
-        //{
-        //    APPBARDATA data = new APPBARDATA();
-        //    data.cbSize = Marshal.SizeOf(data);
-
-        //    IntPtr retval = (IntPtr)SHAppBarMessage(ABM_GETTASKBARPOS, ref data);
-        //    if (retval == IntPtr.Zero)
-        //    {
-        //        throw new Win32Exception("Please re-install Windows");
-        //    }
-
-        //    return new Rectangle(data.rc.left, data.rc.top, data.rc.right - data.rc.left, data.rc.bottom - data.rc.top);
-        //}
-
-        //private static Color GetColourAt(Point location)
-        //{
-        //    using (Bitmap screenPixel = new Bitmap(1, 1, PixelFormat.Format32bppArgb))
-        //    using (Graphics gdest = Graphics.FromImage(screenPixel))
-        //    {
-        //        using (Graphics gsrc = Graphics.FromHwnd(IntPtr.Zero))
-        //        {
-        //            IntPtr hSrcDC = gsrc.GetHdc();
-        //            IntPtr hDC = gdest.GetHdc();
-        //            int retval = BitBlt(hDC, 0, 0, 1, 1, hSrcDC, location.X, location.Y, (int)CopyPixelOperation.SourceCopy);
-        //            gdest.ReleaseHdc();
-        //            gsrc.ReleaseHdc();
-        //        }
-
-        //        return screenPixel.GetPixel(0, 0);
-        //    }
-        //}
-
-        //public static Color GetTaskbarColor()
-        //{
-        //    return GetColourAt(GetTaskbarPosition().Location);
-        //}
 
         #endregion Application bar methods
 
@@ -241,7 +203,7 @@ namespace WinAppBar
 
         public MainForm()
         {
-            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            //this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             pluginLoader = new PluginLoader();
             InitializeComponent();
         }
@@ -250,7 +212,8 @@ namespace WinAppBar
         {
             this.BackColor = ColorTranslator.FromHtml("#1D1D1F");
             this.EnableAero();
-            RegisterBar();
+            this.RegisterBar();
+
             this.FormClosing += MainForm_FormClosing;
 
             //LockWindowUpdate(this.Handle);
