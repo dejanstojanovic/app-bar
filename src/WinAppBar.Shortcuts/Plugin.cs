@@ -119,7 +119,7 @@ namespace WinAppBar.Plugins.Shortcuts
 
             var sourceControl = contextMenu.SourceControl as Shortcut;
             if (sourceControl != null)
-                sourceControl.UnHiglight();
+                sourceControl.UnHiglightAll();
         }
 
         private void Plugin_DragOver(object? sender, DragEventArgs e)

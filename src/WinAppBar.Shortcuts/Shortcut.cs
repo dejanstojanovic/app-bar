@@ -113,7 +113,7 @@ namespace WinAppBar.Plugins.Shortcuts
             this.Shortcut_MouseLeave(this, null);
         }
 
-        public void UnHiglight()
+        public void UnHiglightAll()
         {
             if (this.BackColor != Color.Transparent ||
                 this.Controls.Cast<Control>().Any(c => c.BackColor != Color.Transparent))
@@ -176,7 +176,7 @@ namespace WinAppBar.Plugins.Shortcuts
                 return;
             else
             {
-                UnHiglight();
+                UnHiglightAll();
             }
 
         }
