@@ -12,6 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\AcrylicExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WinAppBar.Plugins.SystemResources\WinAppBar.Plugins.SystemResources.csproj" />
     <ProjectReference Include="..\WinAppBar.Plugins\WinAppBar.Plugins.csproj" />
     <ProjectReference Include="..\WinAppBar.Shortcuts\WinAppBar.Plugins.Shortcuts.csproj" />

@@ -16,7 +16,7 @@ namespace WinAppBar.Plugins.SystemResources
 
         public Plugin() : base()
         {
-            this.Width = 65;
+            this.Width = 70;
             this.Dock = DockStyle.Right;
 
             label = new Label()
@@ -26,7 +26,7 @@ namespace WinAppBar.Plugins.SystemResources
                 TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
                 Padding = new Padding(0, 0, 5, 0),
                 Text = $"100.00%",
-                Width = 45
+                Width = 55
             };
 
             this.Controls.Add(label);
