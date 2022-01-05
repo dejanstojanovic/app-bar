@@ -8,30 +8,33 @@ namespace WinAppBar.Plugins.SystemResources
     {
         public override event EventHandler ApplicationExit;
 
-        readonly Label label;
-        readonly PictureBox pictureBox;
-        readonly Forms.Timer timer;
-        readonly PerformanceCounter cpuCounter;
-        readonly ContextMenuStrip contextMenuStripMain;
+        readonly Label _label;
+        readonly PictureBox _pictureBox;
+        readonly Forms.Timer _timer;
+        readonly PerformanceCounter _cpuCounter;
+        readonly ContextMenuStrip _contextMenuStripMain;
+        readonly ColorTheme _colorTheme;
 
         public Plugin() : base()
         {
+            _colorTheme=new ColorTheme();
+
             this.Width = 70;
             this.Dock = DockStyle.Right;
 
-            label = new Label()
+            _label = new Label()
             {
                 Dock = DockStyle.Right,
-                ForeColor = ColorUtils.GetTextColor(),
+                ForeColor = _colorTheme.TextColor,
                 TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
                 Padding = new Padding(0, 0, 5, 0),
                 Text = $"100.00%",
                 Width = 55
             };
 
-            this.Controls.Add(label);
+            this.Controls.Add(_label);
 
-            pictureBox = new PictureBox() 
+            _pictureBox = new PictureBox() 
             {
                 Width = 16,
                 Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.cpu.png")),
@@ -39,29 +42,29 @@ namespace WinAppBar.Plugins.SystemResources
                 Dock = DockStyle.Left 
             };
 
-            this.Controls.Add(pictureBox);
-            pictureBox.BringToFront();
+            this.Controls.Add(_pictureBox);
+            _pictureBox.BringToFront();
 
             //label.MouseEnter += Label_MouseEnter;
             //label.MouseLeave += Label_MouseLeave;
             //label.Click += Label_Click;
 
-            cpuCounter = new PerformanceCounter();
-            cpuCounter.CategoryName = "Processor";
-            cpuCounter.CounterName = "% Processor Time";
-            cpuCounter.InstanceName = "_Total";
-            cpuCounter.ReadOnly = true;
-            timer = new Forms.Timer();
-            timer.Interval = 1000;
-            timer.Tick += Timer_Tick;
-            Timer_Tick(timer, new EventArgs());
-            //timer.Start();
+            _cpuCounter = new PerformanceCounter();
+            _cpuCounter.CategoryName = "Processor";
+            _cpuCounter.CounterName = "% Processor Time";
+            _cpuCounter.InstanceName = "_Total";
+            _cpuCounter.ReadOnly = true;
+            _timer = new Forms.Timer();
+            _timer.Interval = 1000;
+            _timer.Tick += Timer_Tick;
+            Timer_Tick(_timer, new EventArgs());
+            _timer.Start();
 
-            contextMenuStripMain = new ContextMenuStrip()
+            _contextMenuStripMain = new ContextMenuStrip()
             {
                 RenderMode = ToolStripRenderMode.System,
             };
-            contextMenuStripMain.Items.Add(new ToolStripMenuItem("Resource Monitor", null,
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Resource Monitor", null,
                 (sender, e) =>
                     {
                         var windowsFolder = Environment.GetEnvironmentVariable("windir");
@@ -73,7 +76,7 @@ namespace WinAppBar.Plugins.SystemResources
                         p.Start();
                     }, "ResourceMonitor"));
 
-            contextMenuStripMain.Items.Add(new ToolStripMenuItem("Task Manager", null,
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Task Manager", null,
                 (sender, e) =>
                 {
                     Process p = new Process();
@@ -82,16 +85,16 @@ namespace WinAppBar.Plugins.SystemResources
                     p.Start();
                 }, "TaskManager"));
 
-            contextMenuStripMain.Items.Add("-");
+            _contextMenuStripMain.Items.Add("-");
 
-            contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
                 (sender, e) =>
                 {
                     if (this.ApplicationExit != null)
                         this.ApplicationExit.Invoke(this, EventArgs.Empty);
                 }, "Exit"));
 
-            this.ContextMenuStrip = contextMenuStripMain;
+            this.ContextMenuStrip = _contextMenuStripMain;
 
 
 
@@ -101,12 +104,12 @@ namespace WinAppBar.Plugins.SystemResources
         {
             var cpu = await Task.Run<double>(() =>
             {
-                var unused = cpuCounter.NextValue(); // first call will always return 0
+                var unused = _cpuCounter.NextValue(); // first call will always return 0
                 Thread.Sleep(750); // wait then try again
-                unused = cpuCounter.NextValue();
+                unused = _cpuCounter.NextValue();
                 return Math.Round(unused, 2);
             });
-            this.label.Text = $"{cpu}%";
+            this._label.Text = $"{cpu}%";
         }
 
         private void Label_Click(object? sender, EventArgs e)
@@ -127,10 +130,9 @@ namespace WinAppBar.Plugins.SystemResources
 
         private void Label_MouseEnter(object? sender, EventArgs e)
         {
-            var accentColor = ColorUtils.GetAccentColor();
             var control = sender as Label;
             if (control != null)
-                control.BackColor = accentColor;
+                control.BackColor = _colorTheme.HoverColor;
         }
 
         public override async Task SaveConfig()

@@ -7,26 +7,29 @@ namespace WinAppBar.Plugins.Shortcuts
     public class Plugin : PluginBase
     {
 
-        readonly ContextMenuStrip contextMenuStripMain;
-        readonly ContextMenuStrip contextMenuStripShortcut;
+        readonly ContextMenuStrip _contextMenuStripMain;
+        readonly ContextMenuStrip _contextMenuStripShortcut;
+        readonly ColorTheme _colorTheme;
 
         public override event EventHandler ApplicationExit = null;
         public bool ShowLabels { get; set; }
 
         public Plugin() : base()
         {
+            _colorTheme = new ColorTheme();
+
             this.Dock = DockStyle.Fill;
             this.AllowDrop = true;
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
 
             #region Main ContextMenu
-            contextMenuStripMain = new ContextMenuStrip()
+            _contextMenuStripMain = new ContextMenuStrip()
             {
                 RenderMode = ToolStripRenderMode.System,
             };
 
-            contextMenuStripMain.Items.Add(new ToolStripMenuItem("Show/hide labels", null,
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Show/hide labels", null,
                 (sender, e) =>
                 {
                     this.ShowLabels = !this.ShowLabels;
@@ -41,24 +44,24 @@ namespace WinAppBar.Plugins.Shortcuts
                     this.ReArrangeShortcuts();
                 }, "ShowHide"));
 
-            contextMenuStripMain.Items.Add("-");
+            _contextMenuStripMain.Items.Add("-");
 
-            contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
                 (sender, e) =>
                 {
                     if (this.ApplicationExit != null)
                         this.ApplicationExit.Invoke(this, EventArgs.Empty);
                 }, "Exit"));
-            this.ContextMenuStrip = contextMenuStripMain;
+            this.ContextMenuStrip = _contextMenuStripMain;
             #endregion
 
             #region Shortcut ContextMenu
 
-            contextMenuStripShortcut = new ContextMenuStrip()
+            _contextMenuStripShortcut = new ContextMenuStrip()
             {
                 RenderMode = ToolStripRenderMode.System
             };
-            contextMenuStripShortcut.Items.Add(
+            _contextMenuStripShortcut.Items.Add(
             new ToolStripMenuItem("Open", null, (sender, e) =>
             {
                 var item = sender as ToolStripMenuItem;
@@ -69,7 +72,7 @@ namespace WinAppBar.Plugins.Shortcuts
                         sourceControl.OpenShortcut();
                 }
             }, "Open"));
-            contextMenuStripShortcut.Items.Add(
+            _contextMenuStripShortcut.Items.Add(
             new ToolStripMenuItem("Remove", null, (sender, e) =>
             {
                 var item = sender as ToolStripMenuItem;
@@ -85,9 +88,8 @@ namespace WinAppBar.Plugins.Shortcuts
 
             }, "Remove"));
 
-            contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
+            _contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
             #endregion
-
 
             #region Load configuration
 
@@ -198,7 +200,7 @@ namespace WinAppBar.Plugins.Shortcuts
                         left += control.Width + 4;
                     }
                     shortcut.Left = left;
-                    shortcut.ContextMenuStrip = contextMenuStripShortcut;
+                    shortcut.ContextMenuStrip = _contextMenuStripShortcut;
                     this.Controls.Add(shortcut);
 
 

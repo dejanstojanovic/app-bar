@@ -6,6 +6,11 @@ namespace WinAppBar.Plugins.Shortcuts
 {
     internal class Shortcut : RoundedPanel
     {
+        readonly ToolTip _toolTip;
+        readonly Label _label;
+        readonly PictureBox _pictureBox;
+        readonly ColorTheme _colorTheme;
+
         public string Label
         {
             get => _label.Text;
@@ -16,27 +21,24 @@ namespace WinAppBar.Plugins.Shortcuts
             }
         }
         public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
-        
 
-        readonly ToolTip toolTip;
-        readonly Label _label;
-        readonly PictureBox _pictureBox;
+
+
 
         public Shortcut(string path)
         {
+            _colorTheme = new ColorTheme();
+
             this.Radius = 3;
             this.Thickness = 0;
 
-
-            toolTip = new ToolTip()
+            _toolTip = new ToolTip()
             {
                 AutoPopDelay = 0,
                 InitialDelay = 1,
                 ReshowDelay = 0,
                 ShowAlways = true
             };
-
-            //this.BackColor = Color.Orange;
 
             _pictureBox = new PictureBox()
             {
@@ -46,25 +48,22 @@ namespace WinAppBar.Plugins.Shortcuts
                 Left = 0,
                 Tag = path
             };
-            _pictureBox.Left = 0;
-
-            //_pictureBox.BackColor = Color.White;
 
             this.Controls.Add(_pictureBox);
 
-            _label = new Label();
-            _label.TextAlign = ContentAlignment.MiddleLeft;
-            _label.ForeColor = ColorUtils.GetTextColor();
-            _label.Top = _pictureBox.Top;
-            _label.AutoSize = true;
-            _label.Height = _pictureBox.Height +
+            _label = new Label()
+            {
+                TextAlign = ContentAlignment.MiddleLeft,
+                ForeColor = _colorTheme.TextColor,
+                Top = _pictureBox.Top,
+                AutoSize = true,
+                Height = _pictureBox.Height +
                             _pictureBox.Padding.Top +
-                            _pictureBox.Padding.Bottom;
-            //_label.BackColor = Color.Blue;
-            _label.Left = _pictureBox.Left + _pictureBox.Width;
+                            _pictureBox.Padding.Bottom,
+                Left = _pictureBox.Left + _pictureBox.Width
+            };
+
             _label.TextChanged += _label_TextChanged;
-
-
             this.Controls.Add(_label);
 
 
@@ -151,8 +150,7 @@ namespace WinAppBar.Plugins.Shortcuts
             SetSizes();
         }
 
-        public static int MeasureDisplayStringWidth(Graphics graphics, string text,
-                                            Font font)
+        public static int MeasureDisplayStringWidth(Graphics graphics, string text, Font font)
         {
             StringFormat format = new StringFormat();
             RectangleF rect = new System.Drawing.RectangleF(0, 0, 1000, 1000);
@@ -187,11 +185,10 @@ namespace WinAppBar.Plugins.Shortcuts
 
         private void Shortcut_MouseEnter(object? sender, EventArgs e)
         {
-            var accentColor = ColorUtils.GetAccentColor();
             foreach (Control control in this.Controls)
-                control.BackColor = accentColor;
+                control.BackColor = _colorTheme.HoverColor;
 
-            this.BackColor = accentColor;
+            this.BackColor = _colorTheme.HoverColor;
 
         }
 
@@ -207,11 +204,11 @@ namespace WinAppBar.Plugins.Shortcuts
         private void Shortcut_MouseHover(object? sender, EventArgs e)
         {
             var shortcut = sender as Control;
-            if (shortcut != null && 
-                this.Tag != null && 
+            if (shortcut != null &&
+                this.Tag != null &&
                 !string.IsNullOrWhiteSpace(this.Tag.ToString()))
             {
-                toolTip.SetToolTip(shortcut, this.Tag.ToString());
+                _toolTip.SetToolTip(shortcut, this.Tag.ToString());
             }
         }
 

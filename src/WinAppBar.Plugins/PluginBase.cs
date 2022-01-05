@@ -22,7 +22,5 @@ namespace WinAppBar.Plugins
 
         public abstract Task SaveConfig();
 
-
-
     }
 }
