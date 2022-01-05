@@ -17,7 +17,7 @@ namespace WinAppBar.Plugins.SystemResources
 
         public Plugin() : base()
         {
-            _colorTheme=new ColorTheme();
+            _colorTheme = new ColorTheme();
 
             this.Width = 70;
             this.Dock = DockStyle.Right;
@@ -28,18 +28,18 @@ namespace WinAppBar.Plugins.SystemResources
                 ForeColor = _colorTheme.TextColor,
                 TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
                 Padding = new Padding(0, 0, 5, 0),
-                Text = $"100.00%",
+                Text = $"-.-%",
                 Width = 55
             };
 
             this.Controls.Add(_label);
 
-            _pictureBox = new PictureBox() 
+            _pictureBox = new PictureBox()
             {
                 Width = 16,
                 Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.cpu.png")),
                 SizeMode = PictureBoxSizeMode.CenterImage,
-                Dock = DockStyle.Left 
+                Dock = DockStyle.Left
             };
 
             this.Controls.Add(_pictureBox);
@@ -49,16 +49,24 @@ namespace WinAppBar.Plugins.SystemResources
             //label.MouseLeave += Label_MouseLeave;
             //label.Click += Label_Click;
 
-            _cpuCounter = new PerformanceCounter();
-            _cpuCounter.CategoryName = "Processor";
-            _cpuCounter.CounterName = "% Processor Time";
-            _cpuCounter.InstanceName = "_Total";
-            _cpuCounter.ReadOnly = true;
-            _timer = new Forms.Timer();
-            _timer.Interval = 1000;
+            _cpuCounter = new PerformanceCounter()
+            {
+                CategoryName = "Processor",
+                CounterName = "% Processor Time",
+                InstanceName = "_Total",
+                ReadOnly = true
+            };
+
+            _timer = new Forms.Timer()
+            {
+                Interval = 1000
+            };
+
             _timer.Tick += Timer_Tick;
-            Timer_Tick(_timer, new EventArgs());
             _timer.Start();
+        
+
+            Timer_Tick(_timer, new EventArgs());
 
             _contextMenuStripMain = new ContextMenuStrip()
             {
@@ -104,10 +112,10 @@ namespace WinAppBar.Plugins.SystemResources
         {
             var cpu = await Task.Run<double>(() =>
             {
-                var unused = _cpuCounter.NextValue(); // first call will always return 0
+                var total = _cpuCounter.NextValue(); // first call will always return 0
                 Thread.Sleep(750); // wait then try again
-                unused = _cpuCounter.NextValue();
-                return Math.Round(unused, 2);
+                total = _cpuCounter.NextValue();
+                return Math.Round(total, 2);
             });
             this._label.Text = $"{cpu}%";
         }
