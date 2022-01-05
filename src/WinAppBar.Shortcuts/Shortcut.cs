@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace WinAppBar.Plugins.Shortcuts
 {
-    internal class Shortcut : Panel
+    internal class Shortcut : RoundedPanel
     {
         public string Label
         {
@@ -24,6 +24,10 @@ namespace WinAppBar.Plugins.Shortcuts
 
         public Shortcut(string path)
         {
+            this.Radius = 3;
+            this.Thickness = 0;
+
+
             toolTip = new ToolTip()
             {
                 AutoPopDelay = 0,
