@@ -79,6 +79,8 @@ namespace WinAppBar.Plugins.Shortcuts
 
         }
 
+        public bool LabelShown { get => this._label.Visible; }
+
         public void ShowLabel()
         {
             this._label.Visible = true;
