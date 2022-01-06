@@ -216,7 +216,8 @@ namespace WinAppBar.Plugins.Shortcuts
                 ShowLabels = this.ShowLabels,
                 Shortcuts = shortcutControls.Select(c => new ShortcutConfiguration()
                 {
-                    Path = c.Tag.ToString()
+                    Path = c.Tag.ToString(),
+                    Label = c.Label,
                 })
             };
             var configContent = JsonSerializer.Serialize<Configuration>(

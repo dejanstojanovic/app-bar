@@ -22,9 +22,6 @@ namespace WinAppBar.Plugins.Shortcuts
         }
         public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
 
-
-
-
         public Shortcut(string path)
         {
             _colorTheme = new ColorTheme();
@@ -109,6 +106,7 @@ namespace WinAppBar.Plugins.Shortcuts
             {
                 processInfo.FileName = path;
                 processInfo.UseShellExecute = false;
+                processInfo.WorkingDirectory = Path.GetDirectoryName(path);
             }
 
             Process.Start(processInfo);
