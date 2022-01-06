@@ -203,7 +203,7 @@ namespace WinAppBar
 
         public MainForm()
         {
-            //this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             pluginLoader = new PluginLoader();
             InitializeComponent();
         }

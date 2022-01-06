@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace WinAppBar
 {
     internal static class Program
@@ -15,16 +17,25 @@ namespace WinAppBar
             {
                 ApplicationConfiguration.Initialize();
 
-                Application.SetHighDpiMode(HighDpiMode.SystemAware);
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
+                var services = new ServiceCollection();
 
-                Application.Run(new MainForm());
+                ConfigureServices(services);
 
+                using (ServiceProvider serviceProvider = services.BuildServiceProvider())
+                {
+                    var mainForm = serviceProvider.GetRequiredService<MainForm>();
+                    Application.Run(mainForm);
+                }
                 mutex.ReleaseMutex();
             }
             else
                 return;
+        }
+
+        private static void ConfigureServices(ServiceCollection services)
+        {
+            services.AddScoped<MainForm>();
+            //services.AddLogging(configure => configure.AddConsole());
         }
     }
 }
