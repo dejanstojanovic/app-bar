@@ -3,20 +3,28 @@ using Forms = System.Windows.Forms;
 
 namespace WinAppBar.Plugins.SystemResources
 {
-    internal class CpuUsage:Panel
+    internal class CpuUsage : Panel
     {
+        readonly ToolTip _toolTip;
         readonly Label _label;
         readonly PictureBox _pictureBox;
         readonly Forms.Timer _timer;
         readonly PerformanceCounter _cpuCounter;
         readonly ColorTheme _colorTheme;
 
-        public CpuUsage():base()
+        public CpuUsage() : base()
         {
             _colorTheme = new ColorTheme();
 
+            _toolTip = new ToolTip() {
+                AutoPopDelay = 0,
+                InitialDelay = 1,
+                ReshowDelay = 0,
+                ShowAlways = true 
+            };
+
             this.Width = 75;
-            this.Padding = new Padding(5,0,5,0);
+            this.Padding = new Padding(5, 0, 5, 0);
 
             _label = new Label()
             {
@@ -41,6 +49,9 @@ namespace WinAppBar.Plugins.SystemResources
             this.Controls.Add(_pictureBox);
             _pictureBox.BringToFront();
 
+            foreach (Control control in this.Controls)
+                control.MouseHover += Control_MouseHover;
+
             _cpuCounter = new PerformanceCounter()
             {
                 CategoryName = "Processor",
@@ -57,7 +68,6 @@ namespace WinAppBar.Plugins.SystemResources
             _timer.Tick += Timer_Tick;
             _timer.Start();
 
-
             Timer_Tick(_timer, new EventArgs());
         }
 
@@ -71,6 +81,15 @@ namespace WinAppBar.Plugins.SystemResources
                 return Math.Round(total, 2);
             });
             this._label.Text = $"{cpu}%";
+        }
+
+        private void Control_MouseHover(object? sender, EventArgs e)
+        {
+            var shortcut = sender as Control;
+            if (shortcut != null)
+            {
+                _toolTip.SetToolTip(shortcut, "CPU");
+            }
         }
     }
 }
