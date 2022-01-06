@@ -22,4 +22,10 @@
     <ProjectReference Include="..\WinAppBar.Plugins\WinAppBar.Plugins.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="RamUsage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>
