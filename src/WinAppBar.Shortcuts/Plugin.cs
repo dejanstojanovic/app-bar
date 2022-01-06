@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using WinAppBar.Plugins.Shortcuts.Extensions;
 using System.Text.Json;
+using WinAppBar.Plugins.Shortcuts.Interop;
 
 namespace WinAppBar.Plugins.Shortcuts
 {
@@ -169,6 +170,11 @@ namespace WinAppBar.Plugins.Shortcuts
             this.ResumeLayout();
         }
 
+        private void LoadShortcuts(Configuration configuration) 
+        {
+        
+        }
+
         private void LoadShortcuts(IEnumerable<string> paths, bool showLabel)
         {
             var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
@@ -180,13 +186,13 @@ namespace WinAppBar.Plugins.Shortcuts
             {
                 Icon icon = null;
                 if (path.IsDirectory())
-                    icon = IconTools.GetIconForFile(path, ShellIconSize.SmallIcon);
+                    icon = Icons.GetIconForFile(path, ShellIconSize.SmallIcon);
                 else
                 {
                     var extension = Path.GetExtension(path);
                     icon = fileExtensionsWithIcons.Any(e => e.Equals(extension)) ?
-                        IconTools.GetIconForFile(path, ShellIconSize.SmallIcon) :
-                        IconTools.GetIconForExtension(extension, ShellIconSize.SmallIcon);
+                        Icons.GetIconForFile(path, ShellIconSize.SmallIcon) :
+                        Icons.GetIconForExtension(extension, ShellIconSize.SmallIcon);
                 }
 
                 if (icon != null)
