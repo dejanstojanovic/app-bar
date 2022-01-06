@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using WinAppBar.Plugins;
 
 namespace WinAppBar
 {
@@ -35,7 +36,9 @@ namespace WinAppBar
         private static void ConfigureServices(ServiceCollection services)
         {
             services.AddScoped<MainForm>();
-            //services.AddLogging(configure => configure.AddConsole());
+            
+            services.AddScoped<IPlugin, Plugins.Shortcuts.Plugin>();
+            services.AddScoped<IPlugin, Plugins.SystemResources.Plugin>();
         }
     }
 }

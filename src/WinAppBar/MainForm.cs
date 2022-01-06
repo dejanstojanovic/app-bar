@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using WinAppBar.Extensions;
+using WinAppBar.Plugins;
 
 namespace WinAppBar
 {
@@ -199,12 +200,11 @@ namespace WinAppBar
 
         #endregion Application bar methods
 
-        private readonly IPluginLoader pluginLoader;
+        private readonly IEnumerable<IPlugin> _plugins;
 
-        public MainForm()
+        public MainForm(IEnumerable<IPlugin> plugins)
         {
-            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            pluginLoader = new PluginLoader();
+            _plugins = plugins;
             InitializeComponent();
         }
 
@@ -216,16 +216,20 @@ namespace WinAppBar
 
             this.FormClosing += MainForm_FormClosing;
 
-            //LockWindowUpdate(this.Handle);
-            var plugins = pluginLoader.LoadPlugins(this);
-            //LockWindowUpdate(IntPtr.Zero);
-            foreach (var plugin in plugins)
+            this.LockWindowUpdate();
+            foreach (PluginBase plugin in _plugins.Where(p=> p is PluginBase))
+            {
+                this.Controls.Add(plugin);
                 plugin.ApplicationExit += Plugin_ApplicationExit;
+            }
+            this.UnlockWindowUpdate();
         }
 
         private async void ExitApplication()
         {
-            await pluginLoader.SavePlugins(this);
+            foreach (var plugin in _plugins)
+                await plugin.SaveConfig();
+
             RegisterBar();
             Process.GetCurrentProcess().Kill();
         }
