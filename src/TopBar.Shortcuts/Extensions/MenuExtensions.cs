@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinAppBar.Plugins.Shortcuts.Extensions
+namespace TopBar.Plugins.Shortcuts.Extensions
 {
     public static class MenuExtensions
     {

@@ -7,7 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace WinAppBar.Plugins.Shortcuts.Interop
+namespace TopBar.Plugins.Shortcuts.Interop
 {
 
 	/// <summary>

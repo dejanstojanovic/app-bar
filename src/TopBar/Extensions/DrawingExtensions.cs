@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace WinAppBar.Extensions
+namespace TopBar.Extensions
 {
     public static class DrawingExtensions
     {

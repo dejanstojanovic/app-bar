@@ -1,4 +1,4 @@
-﻿namespace WinAppBar.Plugins
+﻿namespace TopBar.Plugins
 {
     public class ColorTheme
     {

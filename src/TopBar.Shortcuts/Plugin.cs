@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using WinAppBar.Plugins.Shortcuts.Extensions;
+using TopBar.Plugins.Shortcuts.Extensions;
 using System.Text.Json;
-using WinAppBar.Plugins.Shortcuts.Interop;
+using TopBar.Plugins.Shortcuts.Interop;
 
-namespace WinAppBar.Plugins.Shortcuts
+namespace TopBar.Plugins.Shortcuts
 {
     public class Plugin : PluginBase
     {

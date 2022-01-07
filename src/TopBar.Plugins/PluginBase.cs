@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace WinAppBar.Plugins
+namespace TopBar.Plugins
 {
     public abstract class PluginBase : Panel, IPlugin
     {

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace WinAppBar
+namespace TopBar
 {
     partial class MainForm
     {

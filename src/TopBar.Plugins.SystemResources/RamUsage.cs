@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using Forms = System.Windows.Forms;
 
-namespace WinAppBar.Plugins.SystemResources
+namespace TopBar.Plugins.SystemResources
 {
-    internal class CpuUsage : Panel
+    internal class RamUsage:Panel
     {
         readonly ToolTip _toolTip;
         readonly Label _label;
@@ -12,19 +12,20 @@ namespace WinAppBar.Plugins.SystemResources
         readonly PerformanceCounter _cpuCounter;
         readonly ColorTheme _colorTheme;
 
-        public CpuUsage() : base()
+        public RamUsage():base()
         {
             _colorTheme = new ColorTheme();
 
-            _toolTip = new ToolTip() {
+            _toolTip = new ToolTip()
+            {
                 AutoPopDelay = 0,
                 InitialDelay = 1,
                 ReshowDelay = 0,
-                ShowAlways = true 
+                ShowAlways = true
             };
 
             this.Width = 75;
-            this.Padding = new Padding(5, 0, 5, 0);
+            this.Padding = new Padding(5,0,5,0);
 
             _label = new Label()
             {
@@ -41,7 +42,7 @@ namespace WinAppBar.Plugins.SystemResources
             _pictureBox = new PictureBox()
             {
                 Width = 16,
-                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.cpu.png")),
+                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.ram.png")),
                 SizeMode = PictureBoxSizeMode.CenterImage,
                 Dock = DockStyle.Left
             };
@@ -54,9 +55,9 @@ namespace WinAppBar.Plugins.SystemResources
 
             _cpuCounter = new PerformanceCounter()
             {
-                CategoryName = "Processor",
-                CounterName = "% Processor Time",
-                InstanceName = "_Total",
+                CategoryName = "Memory",
+                CounterName = "% Committed Bytes In Use",
+                //InstanceName = "_Total",
                 ReadOnly = true
             };
 
@@ -67,6 +68,7 @@ namespace WinAppBar.Plugins.SystemResources
 
             _timer.Tick += Timer_Tick;
             _timer.Start();
+
 
             Timer_Tick(_timer, new EventArgs());
         }
@@ -88,7 +90,7 @@ namespace WinAppBar.Plugins.SystemResources
             var shortcut = sender as Control;
             if (shortcut != null)
             {
-                _toolTip.SetToolTip(shortcut, "CPU");
+                _toolTip.SetToolTip(shortcut,"RAM");
             }
         }
     }
