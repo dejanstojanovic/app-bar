@@ -108,7 +108,8 @@ namespace TopBar.Plugins.Shortcuts
             {
                 processInfo.FileName = path;
                 processInfo.UseShellExecute = false;
-                processInfo.WorkingDirectory = Path.GetDirectoryName(path);
+                //processInfo.WorkingDirectory = Path.GetDirectoryName(path);
+                //processInfo.WorkingDirectory = null;
             }
 
             Process.Start(processInfo);

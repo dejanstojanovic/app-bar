@@ -191,9 +191,11 @@ namespace TopBar.Plugins.Shortcuts
             var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
 
             foreach (var path in paths.Where(p =>
-                                !string.IsNullOrWhiteSpace(p) &&
-                                (File.Exists(p) || Directory.Exists(p))
-            ).ToArray())
+                                !string.IsNullOrWhiteSpace(p))
+                                .Select(p => Environment.ExpandEnvironmentVariables(p))
+                                .Where(p => File.Exists(p) || Directory.Exists(p))
+                                .ToArray()
+                                )
             {
                 Icon icon = null;
                 if (path.IsDirectory())
