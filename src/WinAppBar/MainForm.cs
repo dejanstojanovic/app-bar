@@ -216,13 +216,13 @@ namespace WinAppBar
 
             this.FormClosing += MainForm_FormClosing;
 
-            this.LockWindowUpdate();
+            //this.LockWindowUpdate();
             foreach (PluginBase plugin in _plugins.Where(p=> p is PluginBase))
             {
                 this.Controls.Add(plugin);
                 plugin.ApplicationExit += Plugin_ApplicationExit;
             }
-            this.UnlockWindowUpdate();
+            //this.UnlockWindowUpdate();
         }
 
         private async void ExitApplication()
