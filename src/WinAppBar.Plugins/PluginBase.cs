@@ -5,6 +5,7 @@ namespace WinAppBar.Plugins
     public abstract class PluginBase : Panel, IPlugin
     {
         public abstract event EventHandler ApplicationExit;
+        public abstract event EventHandler ApplicationRestart;
 
         string _configPath = null;
         public String ConfigurationFilePath

@@ -219,32 +219,40 @@ namespace WinAppBar
 
             this.FormClosing += MainForm_FormClosing;
 
-            //this.LockWindowUpdate();
             foreach (PluginBase plugin in _plugins.Where(p=> p is PluginBase))
             {
                 this.Controls.Add(plugin);
                 plugin.ApplicationExit += Plugin_ApplicationExit;
+                plugin.ApplicationRestart += Plugin_ApplicationRestart;
             }
-            //this.UnlockWindowUpdate();
         }
 
-        private async void ExitApplication()
+        private void Plugin_ApplicationRestart(object? sender, EventArgs e)
+        {
+            ExitApplication(true);
+        }
+
+        private async void ExitApplication(bool restart)
         {
             foreach (var plugin in _plugins)
                 await plugin.SaveConfig();
 
             RegisterBar();
+
+            if(restart)
+                Application.Restart();
+
             Process.GetCurrentProcess().Kill();
         }
 
         private void Plugin_ApplicationExit(object? sender, EventArgs e)
         {
-            ExitApplication();
+            ExitApplication(false);
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            ExitApplication();
+            ExitApplication(false);
         }
     }
 }

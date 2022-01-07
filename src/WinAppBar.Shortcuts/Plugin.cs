@@ -13,6 +13,7 @@ namespace WinAppBar.Plugins.Shortcuts
         readonly ColorTheme _colorTheme;
 
         public override event EventHandler ApplicationExit = null;
+        public override event EventHandler ApplicationRestart = null;
         public bool ShowLabels { get; set; }
 
         public Plugin() : base()
@@ -73,6 +74,16 @@ namespace WinAppBar.Plugins.Shortcuts
             {
                 Checked = this.Controls.Cast<Shortcut>().Any(s => s.LabelShown)
             });
+
+            _contextMenuStripMain.Items.Add("-");
+
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart application", null,
+                (sender, e) =>
+                {
+                    if (this.ApplicationRestart != null)
+                        this.ApplicationRestart.Invoke(this, EventArgs.Empty);
+                }, "Restart"));
+            this.ContextMenuStrip = _contextMenuStripMain;
 
             _contextMenuStripMain.Items.Add("-");
 
