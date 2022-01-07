@@ -13,9 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Plugin.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="Plugin.cs" />
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
+using WinAppBar.Plugins;
+
 namespace WinAppBar
 {
     internal static class Program
@@ -14,13 +17,29 @@ namespace WinAppBar
             if (canCreateInstance)
             {
                 ApplicationConfiguration.Initialize();
-                Application.EnableVisualStyles();
-                Application.Run(new MainForm());
 
+                var services = new ServiceCollection();
+
+                ConfigureServices(services);
+
+                using (ServiceProvider serviceProvider = services.BuildServiceProvider())
+                {
+                    var mainForm = serviceProvider.GetRequiredService<MainForm>();
+                    Application.Run(mainForm);
+                }
                 mutex.ReleaseMutex();
             }
             else
                 return;
+        }
+
+        private static void ConfigureServices(ServiceCollection services)
+        {
+            services.AddScoped<MainForm>();
+            
+            services.AddScoped<IPlugin, Plugins.Shortcuts.Plugin>();
+            services.AddScoped<IPlugin, Plugins.SystemResources.Plugin>();
+            services.AddSingleton<ColorTheme>();
         }
     }
 }

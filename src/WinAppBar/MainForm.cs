@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using WinAppBar.Extensions;
+using WinAppBar.Plugins;
 
 namespace WinAppBar
 {
     public partial class MainForm : Form
     {
         #region Application bar methods
+
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
         {
@@ -73,9 +67,6 @@ namespace WinAppBar
         [DllImport("Shell32.dll", CallingConvention = CallingConvention.StdCall)]
         private static extern uint SHAppBarMessage(int dwMessage, ref APPBARDATA pData);
 
-        [DllImport("User32.dll")]
-        private static extern int GetSystemMetrics(int Index);
-
         [DllImport("User32.dll", ExactSpelling = true,
             CharSet = System.Runtime.InteropServices.CharSet.Auto)]
         private static extern bool MoveWindow
@@ -83,10 +74,6 @@ namespace WinAppBar
 
         [DllImport("User32.dll", CharSet = CharSet.Auto)]
         private static extern int RegisterWindowMessage(string msg);
-
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
-        private static extern int BitBlt(IntPtr hDC, int x, int y, int nWidth, int nHeight, IntPtr hSrcDC, int xSrc, int ySrc, int dwRop);
-
 
         private int uCallBack;
 
@@ -210,75 +197,54 @@ namespace WinAppBar
             }
         }
 
-        private const int ABM_GETTASKBARPOS = 5;
 
+        #endregion Application bar methods
 
-        private static Rectangle GetTaskbarPosition()
+        readonly IEnumerable<IPlugin> _plugins;
+        readonly ColorTheme _colorTheme;
+
+        public MainForm(IEnumerable<IPlugin> plugins, ColorTheme colorTheme)
         {
-            APPBARDATA data = new APPBARDATA();
-            data.cbSize = Marshal.SizeOf(data);
-
-            IntPtr retval = (IntPtr)SHAppBarMessage(ABM_GETTASKBARPOS, ref data);
-            if (retval == IntPtr.Zero)
-            {
-                throw new Win32Exception("Please re-install Windows");
-            }
-
-            return new Rectangle(data.rc.left, data.rc.top, data.rc.right - data.rc.left, data.rc.bottom - data.rc.top);
-        }
-
-        private static Color GetColourAt(Point location)
-        {
-            using (Bitmap screenPixel = new Bitmap(1, 1, PixelFormat.Format32bppArgb))
-            using (Graphics gdest = Graphics.FromImage(screenPixel))
-            {
-                using (Graphics gsrc = Graphics.FromHwnd(IntPtr.Zero))
-                {
-                    IntPtr hSrcDC = gsrc.GetHdc();
-                    IntPtr hDC = gdest.GetHdc();
-                    int retval = BitBlt(hDC, 0, 0, 1, 1, hSrcDC, location.X, location.Y, (int)CopyPixelOperation.SourceCopy);
-                    gdest.ReleaseHdc();
-                    gsrc.ReleaseHdc();
-                }
-
-                return screenPixel.GetPixel(0, 0);
-            }
-        }
-
-        public static Color GetTaskbarColor()
-        {
-            return GetColourAt(GetTaskbarPosition().Location);
-        }
-        #endregion
-
-        public MainForm()
-        {
+            
+            _colorTheme = colorTheme;
+            _plugins = plugins;
             InitializeComponent();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.BackColor = GetTaskbarColor();
-            this.EnableAcrylic(this.BackColor);
-            RegisterBar();
+            this.BackColor = _colorTheme.BackgroudColor;
+            //this.EnableAero();
+            this.RegisterBar();
+
             this.FormClosing += MainForm_FormClosing;
 
-            IPluginLoader pluginLoader = new PluginLoader();
-            var plugins =  pluginLoader.LoadPlugins(this);
-            foreach(var plugin in plugins)
+            //this.LockWindowUpdate();
+            foreach (PluginBase plugin in _plugins.Where(p=> p is PluginBase))
+            {
+                this.Controls.Add(plugin);
                 plugin.ApplicationExit += Plugin_ApplicationExit;
+            }
+            //this.UnlockWindowUpdate();
+        }
+
+        private async void ExitApplication()
+        {
+            foreach (var plugin in _plugins)
+                await plugin.SaveConfig();
+
+            RegisterBar();
+            Process.GetCurrentProcess().Kill();
         }
 
         private void Plugin_ApplicationExit(object? sender, EventArgs e)
         {
-            RegisterBar();
-            Process.GetCurrentProcess().Kill();
+            ExitApplication();
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            RegisterBar();
-            Process.GetCurrentProcess().Kill();
+            ExitApplication();
         }
     }
 }

@@ -1,80 +1,139 @@
-﻿using Microsoft.Win32;
-using System.Diagnostics;
-using WinAppBar.Plugins;
+﻿using System.Reflection;
 using WinAppBar.Plugins.Shortcuts.Extensions;
+using System.Text.Json;
+using WinAppBar.Plugins.Shortcuts.Interop;
 
 namespace WinAppBar.Plugins.Shortcuts
 {
-    public class Plugin : Panel, IPlugin
+    public class Plugin : PluginBase
     {
 
+        readonly ContextMenuStrip _contextMenuStripMain;
+        readonly ContextMenuStrip _contextMenuStripShortcut;
+        readonly ColorTheme _colorTheme;
 
-
-        readonly ToolTip toolTip;
-        readonly ContextMenuStrip contextMenuStripMain;
-        readonly ContextMenuStrip contextMenuStripShortcut;
-
-        public event EventHandler ApplicationExit = null;
+        public override event EventHandler ApplicationExit = null;
+        public bool ShowLabels { get; set; }
 
         public Plugin() : base()
         {
+            _colorTheme = new ColorTheme();
+
             this.Dock = DockStyle.Fill;
             this.AllowDrop = true;
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
 
-            toolTip = new ToolTip()
-            {
-                AutoPopDelay = 0,
-                InitialDelay = 1,
-                ReshowDelay = 0,
-                ShowAlways = true
-            };
+            #region Load configuration
 
-            contextMenuStripMain = new ContextMenuStrip()
+            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath) && File.Exists(this.ConfigurationFilePath))
+            {
+                string configurationContent = null;
+                if (File.Exists(ConfigurationFilePath))
+                    configurationContent = File.ReadAllText(ConfigurationFilePath);
+
+                var configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
+
+                if (configuration != null)
+                    ShowLabels = configuration.ShowLabels;
+
+                if (configuration?.Shortcuts != null && configuration.Shortcuts.Any())
+                    LoadShortcuts(configuration.Shortcuts.Select(s => s.Path).ToArray(), configuration.ShowLabels);
+            }
+
+            #endregion
+
+            #region Main ContextMenu
+            _contextMenuStripMain = new ContextMenuStrip()
             {
                 RenderMode = ToolStripRenderMode.System,
             };
-            ToolStripMenuItem exitToolStripMenuItem = new ToolStripMenuItem("Exit", null,
+
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Labels", null,
+                (sender, e) =>
+                {
+                    var contextItem = sender as ToolStripMenuItem;
+                    this.ShowLabels = !this.ShowLabels;
+                    var show = this.ShowLabels;
+                    if (contextItem != null && show)
+                        contextItem.Checked = true;
+                    else if (contextItem != null)
+                        contextItem.Checked = false;
+
+                    foreach (Shortcut shortcut in this.Controls)
+                    {
+                        if (show)
+                            shortcut.ShowLabel();
+                        else
+                            shortcut.HideLabel();
+
+                    }
+                    this.ReArrangeShortcuts();
+                }, "ShowHide")
+            {
+                Checked = this.Controls.Cast<Shortcut>().Any(s => s.LabelShown)
+            });
+
+            _contextMenuStripMain.Items.Add("-");
+
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
                 (sender, e) =>
                 {
                     if (this.ApplicationExit != null)
                         this.ApplicationExit.Invoke(this, EventArgs.Empty);
-                }, "Exit");
-            contextMenuStripMain.Items.Add(exitToolStripMenuItem);
-            this.ContextMenuStrip = contextMenuStripMain;
+                }, "Exit"));
+            this.ContextMenuStrip = _contextMenuStripMain;
+            #endregion
 
+            #region Shortcut ContextMenu
 
-            contextMenuStripShortcut = new ContextMenuStrip()
+            _contextMenuStripShortcut = new ContextMenuStrip()
             {
                 RenderMode = ToolStripRenderMode.System
             };
-            contextMenuStripShortcut.Items.Add(
+            _contextMenuStripShortcut.Items.Add(
             new ToolStripMenuItem("Open", null, (sender, e) =>
+            {
+                var item = sender as ToolStripMenuItem;
+                if (item != null)
+                {
+                    var sourceControl = item.GetSourceControl() as Shortcut;
+                    if (sourceControl != null)
+                        sourceControl.OpenShortcut();
+                }
+            }, "Open"));
+            _contextMenuStripShortcut.Items.Add(
+            new ToolStripMenuItem("Remove", null, (sender, e) =>
             {
                 var item = sender as ToolStripMenuItem;
                 if (item != null)
                 {
                     var sourceControl = item.GetSourceControl();
                     if (sourceControl != null)
-                        PictureBox_Click(sourceControl, new MouseEventArgs(MouseButtons.Left,1,0,0,0));
-                }
-            }, "Open"));
-            contextMenuStripShortcut.Items.Add(
-            new ToolStripMenuItem("Remove", null, (sender, e) =>
-            {
-                var item = sender as ToolStripMenuItem;
-                if(item != null)
-                {
-                    var sourceControl = item.GetSourceControl();
-                    if(sourceControl != null)
+                    {
                         sourceControl.Parent.Controls.Remove(sourceControl);
+                        ReArrangeShortcuts();
+                    }
                 }
 
             }, "Remove"));
 
+            _contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
+            #endregion
         }
 
+        #region Event handle methods
+
+        private void ContextMenuStripShortcut_Closing(object? sender, ToolStripDropDownClosingEventArgs e)
+        {
+            var contextMenu = sender as ContextMenuStrip;
+            if (contextMenu == null)
+                return;
+
+            var sourceControl = contextMenu.SourceControl as Shortcut;
+            if (sourceControl != null)
+                sourceControl.UnHiglightAll();
+        }
 
         private void Plugin_DragOver(object? sender, DragEventArgs e)
         {
@@ -93,113 +152,99 @@ namespace WinAppBar.Plugins.Shortcuts
             if (files == null || !files.Any())
                 return;
 
-            LoadShortcuts(files);
+            LoadShortcuts(files, this.ShowLabels);
         }
 
-        private bool IsDirectory(string path)
-        {
-            FileAttributes attr = File.GetAttributes(path);
-            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-                return true;
+        #endregion
 
-            return false;
+        private void ReArrangeShortcuts()
+        {
+            this.SuspendLayout();
+            var left = 4;
+            foreach (Control control in this.Controls)
+            {
+                control.Left = left;
+                left += control.Width + 4;
+            }
+
+            this.ResumeLayout();
+        }
+
+        private void LoadShortcuts(Configuration configuration)
+        {
 
         }
 
-        private void LoadShortcuts(IEnumerable<string> files)
+        private void LoadShortcuts(IEnumerable<string> paths, bool showLabel)
         {
-            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk",".ico" };
+            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
 
-            foreach (var file in files)
+            foreach (var path in paths.Where(p =>
+                                !string.IsNullOrWhiteSpace(p) &&
+                                (File.Exists(p) || Directory.Exists(p))
+            ).ToArray())
             {
                 Icon icon = null;
-                if (IsDirectory(file))
-                    icon = IconTools.GetIconForFile(file, ShellIconSize.SmallIcon);
+                if (path.IsDirectory())
+                    icon = Icons.GetIconForFile(path, ShellIconSize.SmallIcon);
                 else
                 {
-                    var extension = Path.GetExtension(file);
+                    var extension = Path.GetExtension(path);
                     icon = fileExtensionsWithIcons.Any(e => e.Equals(extension)) ?
-                        IconTools.GetIconForFile(file, ShellIconSize.SmallIcon) :
-                        IconTools.GetIconForExtension(extension, ShellIconSize.SmallIcon);
+                        Icons.GetIconForFile(path, ShellIconSize.SmallIcon) :
+                        Icons.GetIconForExtension(extension, ShellIconSize.SmallIcon);
                 }
 
                 if (icon != null)
                 {
-                    var pictureBox = new PictureBox()
+                    var shortcut = new Shortcut(path)
                     {
-                        Image = icon.ToBitmap(),
-                        Size = new Size(24, 24),
-                        Padding = new Padding(4),
-                        Top = 5,
-                        Tag = file
+                        Icon = icon.ToBitmap(),
+                        Label = Path.GetFileName(path),
+                        Top = 4,
+                        Tag = path
                     };
-                    pictureBox.Left = 5 + (this.Controls.Count * pictureBox.Width) + (this.Controls.Count * 2);
 
-                    pictureBox.MouseEnter += PictureBox_MouseEnter;
-                    pictureBox.MouseLeave += PictureBox_MouseLeave;
-                    pictureBox.MouseHover += PictureBox_MouseHover;
-                    pictureBox.Click += PictureBox_Click;
+                    if (showLabel)
+                        shortcut.ShowLabel();
+                    else
+                        shortcut.HideLabel();
 
-                    this.Controls.Add(pictureBox);
+                    var left = 4;
+                    foreach (Control control in this.Controls)
+                    {
+                        left += control.Width + 4;
+                    }
+                    shortcut.Left = left;
+                    shortcut.ContextMenuStrip = _contextMenuStripShortcut;
+                    this.Controls.Add(shortcut);
 
-                    pictureBox.ContextMenuStrip = contextMenuStripShortcut;
+
                 }
             }
         }
 
-        private void PictureBox_MouseHover(object? sender, EventArgs e)
+        public async override Task SaveConfig()
         {
-            var btn = sender as Control;
-            if (btn != null)
+            var shortcutControls = this.Controls.Cast<Shortcut>();
+            var configuration = new Configuration()
             {
-                toolTip.SetToolTip(btn, btn.Tag.ToString());
-            }
+                ShowLabels = this.ShowLabels,
+                Shortcuts = shortcutControls.Select(c => new ShortcutConfiguration()
+                {
+                    Path = c.Tag.ToString(),
+                    Label = c.Label,
+                })
+            };
+            var configContent = JsonSerializer.Serialize<Configuration>(
+                 configuration,
+                 new JsonSerializerOptions()
+                 {
+                     WriteIndented = true
+                 });
+
+            await File.WriteAllTextAsync(path: this.ConfigurationFilePath, configContent);
         }
 
-        private void PictureBox_Click(object? sender, EventArgs e)
-        {
-            MouseEventArgs args = (MouseEventArgs)e;
-            if (args != null && args.Button == MouseButtons.Right)
-                return;
-
-            var control = sender as PictureBox;
-            if (control == null)
-                return;
-
-            var path = control.Tag.ToString();
-            if (string.IsNullOrEmpty(path))
-                return;
-
-            var processInfo = new ProcessStartInfo();
-            var executables = new String[] { ".exe", ".com", ".bat" };
-            if (IsDirectory(path) ||
-                !executables.Any(e => e.Equals(Path.GetExtension(path), StringComparison.InvariantCultureIgnoreCase)))
-            {
-                processInfo.FileName = path;
-                processInfo.UseShellExecute = true;
-            }
-            else
-            {
-                processInfo.FileName = path;
-                processInfo.UseShellExecute = false;
-            }
-
-            Process.Start(processInfo);
-        }
-
-        private void PictureBox_MouseLeave(object? sender, EventArgs e)
-        {
-            var control = sender as PictureBox;
-            if (control != null)
-                control.BackColor = Color.Transparent;
-        }
-
-        private void PictureBox_MouseEnter(object? sender, EventArgs e)
-        {
-            var accentColor = ColorUtils.GetAccentColor();
-            var control = sender as PictureBox;
-            if (control != null)
-                control.BackColor = Color.FromArgb(accentColor.a, accentColor.r, accentColor.g, accentColor.b);
-        }
     }
 }
