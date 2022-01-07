@@ -54,19 +54,19 @@ namespace WinAppBar.Plugins.Shortcuts
                 {
                     var contextItem = sender as ToolStripMenuItem;
                     this.ShowLabels = !this.ShowLabels;
+                    var show = this.ShowLabels;
+                    if (show)
+                        contextItem.Checked = true;
+                    else
+                        contextItem.Checked = false;
+
                     foreach (Shortcut shortcut in this.Controls)
                     {
-                        //shortcut.ToggleLabel();
-                        if (this.ShowLabels)
-                        {
+                        if (show)
                             shortcut.ShowLabel();
-                            contextItem.Checked = true;
-                        }
                         else
-                        {
                             shortcut.HideLabel();
-                            contextItem.Checked = false;
-                        }
+
                     }
                     this.ReArrangeShortcuts();
                 }, "ShowHide")
@@ -170,9 +170,9 @@ namespace WinAppBar.Plugins.Shortcuts
             this.ResumeLayout();
         }
 
-        private void LoadShortcuts(Configuration configuration) 
+        private void LoadShortcuts(Configuration configuration)
         {
-        
+
         }
 
         private void LoadShortcuts(IEnumerable<string> paths, bool showLabel)

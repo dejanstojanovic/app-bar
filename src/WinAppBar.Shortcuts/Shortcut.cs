@@ -142,6 +142,7 @@ namespace WinAppBar.Plugins.Shortcuts
                 width = width + _pictureBox.Padding.Left;
             }
             this.Width = width;
+            this.Invalidate();
         }
 
         public void ToggleLabel()
