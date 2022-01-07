@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
-using WinAppBar.Plugins.Shortcuts.Extensions;
+using TopBar.Plugins.Shortcuts.Extensions;
 using System.Linq;
 
-namespace WinAppBar.Plugins.Shortcuts
+namespace TopBar.Plugins.Shortcuts
 {
     internal class Shortcut : RoundedPanel
     {

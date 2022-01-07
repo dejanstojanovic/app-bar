@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using WinAppBar.Extensions;
-using WinAppBar.Plugins;
+using TopBar.Extensions;
+using TopBar.Plugins;
 
-namespace WinAppBar
+namespace TopBar
 {
     public partial class MainForm : Form
     {

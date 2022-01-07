@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinAppBar.Plugins.Shortcuts.Interop
+namespace TopBar.Plugins.Shortcuts.Interop
 {
     public static class Shortcuts
     {

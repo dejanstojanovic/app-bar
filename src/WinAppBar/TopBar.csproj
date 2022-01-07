@@ -23,9 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WinAppBar.Plugins.SystemResources\WinAppBar.Plugins.SystemResources.csproj" />
-    <ProjectReference Include="..\WinAppBar.Plugins\WinAppBar.Plugins.csproj" />
-    <ProjectReference Include="..\WinAppBar.Shortcuts\WinAppBar.Plugins.Shortcuts.csproj" />
+    <ProjectReference Include="..\WinAppBar.Plugins.SystemResources\TopBar.Plugins.SystemResources.csproj" />
+    <ProjectReference Include="..\WinAppBar.Plugins\TopBar.Plugins.csproj" />
+    <ProjectReference Include="..\WinAppBar.Shortcuts\TopBar.Plugins.Shortcuts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

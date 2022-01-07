@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Forms = System.Windows.Forms;
 
-namespace WinAppBar.Plugins.SystemResources
+namespace TopBar.Plugins.SystemResources
 {
     internal class CpuUsage : Panel
     {

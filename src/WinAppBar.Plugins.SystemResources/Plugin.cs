@@ -2,7 +2,7 @@
 using Forms = System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
-namespace WinAppBar.Plugins.SystemResources
+namespace TopBar.Plugins.SystemResources
 {
     public class Plugin : PluginBase
     {

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WinAppBar.Plugins;
+using TopBar.Plugins;
 
-namespace WinAppBar
+namespace TopBar
 {
     internal static class Program
     {
