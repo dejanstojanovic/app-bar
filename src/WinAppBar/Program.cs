@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WinAppBar.Plugins;
 
@@ -39,7 +40,22 @@ namespace WinAppBar
             
             services.AddScoped<IPlugin, Plugins.Shortcuts.Plugin>();
             services.AddScoped<IPlugin, Plugins.SystemResources.Plugin>();
-            services.AddSingleton<ColorTheme>();
+
+            IConfigurationBuilder configBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+                IConfiguration config = configBuilder.Build();
+
+            services.AddSingleton<IConfiguration>(config);
+
+            services.AddSingleton<ColorTheme>(new ColorTheme()
+            {
+                BackgroudColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.BackgroudColor)}")),
+                TextColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.TextColor)}")),
+                HoverColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.HoverColor)}"))
+            });
+
+
         }
     }
 }
