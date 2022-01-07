@@ -55,9 +55,9 @@ namespace WinAppBar.Plugins.Shortcuts
                     var contextItem = sender as ToolStripMenuItem;
                     this.ShowLabels = !this.ShowLabels;
                     var show = this.ShowLabels;
-                    if (show)
+                    if (contextItem != null && show)
                         contextItem.Checked = true;
-                    else
+                    else if (contextItem != null)
                         contextItem.Checked = false;
 
                     foreach (Shortcut shortcut in this.Controls)
