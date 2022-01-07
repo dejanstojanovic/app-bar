@@ -39,6 +39,7 @@ namespace WinAppBar
             
             services.AddScoped<IPlugin, Plugins.Shortcuts.Plugin>();
             services.AddScoped<IPlugin, Plugins.SystemResources.Plugin>();
+            services.AddSingleton<ColorTheme>();
         }
     }
 }

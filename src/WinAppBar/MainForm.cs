@@ -200,18 +200,21 @@ namespace WinAppBar
 
         #endregion Application bar methods
 
-        private readonly IEnumerable<IPlugin> _plugins;
+        readonly IEnumerable<IPlugin> _plugins;
+        readonly ColorTheme _colorTheme;
 
-        public MainForm(IEnumerable<IPlugin> plugins)
+        public MainForm(IEnumerable<IPlugin> plugins, ColorTheme colorTheme)
         {
+            
+            _colorTheme = colorTheme;
             _plugins = plugins;
             InitializeComponent();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.BackColor = ColorTranslator.FromHtml("#1D1D1F");
-            this.EnableAero();
+            this.BackColor = _colorTheme.BackgroudColor;
+            //this.EnableAero();
             this.RegisterBar();
 
             this.FormClosing += MainForm_FormClosing;
