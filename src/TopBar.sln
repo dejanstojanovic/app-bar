@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopBar", "WinAppBar\TopBar.csproj", "{330ECF4F-5DB6-4A70-B227-D03EB2AC9E6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopBar", "TopBar\TopBar.csproj", "{330ECF4F-5DB6-4A70-B227-D03EB2AC9E6F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopBar.Plugins.Shortcuts", "WinAppBar.Shortcuts\TopBar.Plugins.Shortcuts.csproj", "{D6D5CC0B-15C9-47BE-8C51-438032A7C7F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopBar.Plugins.Shortcuts", "TopBar.Shortcuts\TopBar.Plugins.Shortcuts.csproj", "{D6D5CC0B-15C9-47BE-8C51-438032A7C7F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopBar.Plugins", "WinAppBar.Plugins\TopBar.Plugins.csproj", "{60E66E08-831A-4E6F-AB71-E2063477FA0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopBar.Plugins", "TopBar.Plugins\TopBar.Plugins.csproj", "{60E66E08-831A-4E6F-AB71-E2063477FA0D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopBar.Plugins.SystemResources", "WinAppBar.Plugins.SystemResources\TopBar.Plugins.SystemResources.csproj", "{2EFA0CC3-2549-4D94-BB50-0E1563F045FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopBar.Plugins.SystemResources", "TopBar.Plugins.SystemResources\TopBar.Plugins.SystemResources.csproj", "{2EFA0CC3-2549-4D94-BB50-0E1563F045FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
