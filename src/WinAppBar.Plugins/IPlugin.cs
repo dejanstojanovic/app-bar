@@ -4,6 +4,7 @@
     {
         event EventHandler ApplicationExit;
         event EventHandler ApplicationRestart;
+
         Task SaveConfig();
     }
 }
