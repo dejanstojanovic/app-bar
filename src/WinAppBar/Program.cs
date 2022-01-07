@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration.Json;
 using WinAppBar.Plugins;
 
 namespace WinAppBar
@@ -55,6 +54,7 @@ namespace WinAppBar
                 TextColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.TextColor)}")),
                 HoverColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.HoverColor)}"))
             });
+
 
         }
     }

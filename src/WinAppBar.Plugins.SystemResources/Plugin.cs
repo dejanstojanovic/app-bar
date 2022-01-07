@@ -6,8 +6,10 @@ namespace WinAppBar.Plugins.SystemResources
 {
     public class Plugin : PluginBase
     {
+
         public override event EventHandler ApplicationExit=null;
         public override event EventHandler ApplicationRestart = null;
+
 
         readonly ContextMenuStrip _contextMenuStripMain;
         readonly ColorTheme _colorTheme;
@@ -34,7 +36,6 @@ namespace WinAppBar.Plugins.SystemResources
             this.Controls.Add(_cpuUsage);
             this.Controls.Add(_ramUsage);
 
-            //this.BackColor = Color.Black;
 
             _contextMenuStripMain = new ContextMenuStrip()
             {
@@ -63,6 +64,7 @@ namespace WinAppBar.Plugins.SystemResources
 
             _contextMenuStripMain.Items.Add("-");
 
+
             _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart application", null,
                 (sender, e) =>
                 {
@@ -86,10 +88,6 @@ namespace WinAppBar.Plugins.SystemResources
 
 
         }
-
-
-
-       
 
         public override async Task SaveConfig()
         {

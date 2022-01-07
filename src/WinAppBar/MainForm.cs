@@ -243,16 +243,29 @@ namespace WinAppBar
                 Application.Restart();
 
             Process.GetCurrentProcess().Kill();
+
+        }
+
+        private async void ExitApplication()
+        {
+
+            foreach (var plugin in _plugins)
+                await plugin.SaveConfig();
+
+            RegisterBar();
+            Process.GetCurrentProcess().Kill();
+
         }
 
         private void Plugin_ApplicationExit(object? sender, EventArgs e)
         {
-            ExitApplication(false);
+            ExitApplication();
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
             ExitApplication(false);
+
         }
     }
 }

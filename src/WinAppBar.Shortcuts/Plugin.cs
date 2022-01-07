@@ -44,6 +44,7 @@ namespace WinAppBar.Plugins.Shortcuts
 
             #endregion
 
+
             #region Main ContextMenu
             _contextMenuStripMain = new ContextMenuStrip()
             {
@@ -177,7 +178,6 @@ namespace WinAppBar.Plugins.Shortcuts
                 control.Left = left;
                 left += control.Width + 4;
             }
-
             this.ResumeLayout();
         }
 
