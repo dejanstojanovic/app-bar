@@ -3,7 +3,7 @@ using Forms = System.Windows.Forms;
 
 namespace TopBar.Plugins.SystemResources
 {
-    internal class RamUsage:Panel
+    internal class RamUsage : Panel
     {
         readonly ToolTip _toolTip;
         readonly Label _label;
@@ -12,7 +12,7 @@ namespace TopBar.Plugins.SystemResources
         readonly PerformanceCounter _cpuCounter;
         readonly ColorTheme _colorTheme;
 
-        public RamUsage():base()
+        public RamUsage() : base()
         {
             _colorTheme = new ColorTheme();
 
@@ -25,7 +25,7 @@ namespace TopBar.Plugins.SystemResources
             };
 
             this.Width = 75;
-            this.Padding = new Padding(5,0,5,0);
+            this.Padding = new Padding(5, 0, 5, 0);
 
             _label = new Label()
             {
@@ -38,11 +38,13 @@ namespace TopBar.Plugins.SystemResources
             };
 
             this.Controls.Add(_label);
-
+            var iconColor = _colorTheme.TextColor.R == 0 && _colorTheme.TextColor.G == 0 && _colorTheme.TextColor.B == 0 ?
+                nameof(Color.Black).ToLower() :
+                nameof(Color.White).ToLower();
             _pictureBox = new PictureBox()
             {
                 Width = 16,
-                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.ram.png")),
+                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.ram_{iconColor}.png")),
                 SizeMode = PictureBoxSizeMode.CenterImage,
                 Dock = DockStyle.Left
             };
@@ -90,7 +92,7 @@ namespace TopBar.Plugins.SystemResources
             var shortcut = sender as Control;
             if (shortcut != null)
             {
-                _toolTip.SetToolTip(shortcut,"RAM");
+                _toolTip.SetToolTip(shortcut, "RAM");
             }
         }
     }
