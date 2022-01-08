@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TopBar.Plugins.Shortcuts.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TopBar.Plugins.Shortcuts.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TopBar.Plugins\TopBar.Plugins.csproj" />
   </ItemGroup>
 

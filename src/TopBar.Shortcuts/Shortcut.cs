@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using TopBar.Plugins.Shortcuts.Extensions;
 using System.Linq;
+using TopBar.Plugins.Shortcuts.Interop;
 
 namespace TopBar.Plugins.Shortcuts
 {
@@ -10,6 +11,9 @@ namespace TopBar.Plugins.Shortcuts
         readonly Label _label;
         readonly PictureBox _pictureBox;
         readonly ColorTheme _colorTheme;
+        readonly ShortcutConfiguration _shortcutConfiguration;
+
+        public ShortcutConfiguration ShortcutConfiguration => _shortcutConfiguration;
 
         public string Label
         {
@@ -22,12 +26,14 @@ namespace TopBar.Plugins.Shortcuts
         }
         public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
 
-        public Shortcut(string path)
+        public Shortcut(ShortcutConfiguration config)
         {
+            _shortcutConfiguration = config;
             _colorTheme = new ColorTheme();
 
             this.Radius = 3;
             this.Thickness = 0;
+            this.Top = 4;
 
             _toolTip = new ToolTip()
             {
@@ -42,8 +48,7 @@ namespace TopBar.Plugins.Shortcuts
                 Size = new Size(24, 24),
                 Padding = new Padding(4),
                 Top = 0,
-                Left = 0,
-                Tag = path
+                Left = 0
             };
 
             this.Controls.Add(_pictureBox);
@@ -62,6 +67,22 @@ namespace TopBar.Plugins.Shortcuts
 
             _label.TextChanged += _label_TextChanged;
             this.Controls.Add(_label);
+
+            Icon icon = null;
+            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
+            if (config.Path.IsDirectory())
+                icon = Icons.GetIconForFile(config.Path, ShellIconSize.SmallIcon);
+            else
+            {
+                var extension = Path.GetExtension(config.Path);
+                icon = fileExtensionsWithIcons.Any(e => e.Equals(extension)) ?
+                    Icons.GetIconForFile(config.Path, ShellIconSize.SmallIcon) :
+                    Icons.GetIconForExtension(extension, ShellIconSize.SmallIcon);
+            }
+            if (icon != null)
+                this._pictureBox.Image = icon.ToBitmap();
+
+            _label.Text = _shortcutConfiguration.Label;
 
 
             foreach (Control control in this.Controls)
@@ -93,7 +114,7 @@ namespace TopBar.Plugins.Shortcuts
         }
         public void OpenShortcut()
         {
-            var path = this.Tag != null ? this.Tag.ToString() : null;
+            var path = _shortcutConfiguration.Path;
             if (string.IsNullOrEmpty(path))
                 return;
             var processInfo = new ProcessStartInfo();
@@ -108,11 +129,18 @@ namespace TopBar.Plugins.Shortcuts
             {
                 processInfo.FileName = path;
                 processInfo.UseShellExecute = false;
-                //processInfo.WorkingDirectory = Path.GetDirectoryName(path);
-                //processInfo.WorkingDirectory = null;
             }
 
-            Process.Start(processInfo);
+            try
+            {
+                Process.Start(processInfo);
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                processInfo.UseShellExecute = true;
+                processInfo.Verbs.Append("runas");
+                Process.Start(processInfo);
+            }
 
             this.Shortcut_MouseLeave(this, null);
         }

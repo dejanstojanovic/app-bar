@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using TopBar.Plugins.Shortcuts.Extensions;
+﻿using TopBar.Plugins.Shortcuts.Extensions;
 using System.Text.Json;
-using TopBar.Plugins.Shortcuts.Interop;
 
 namespace TopBar.Plugins.Shortcuts
 {
@@ -28,17 +26,20 @@ namespace TopBar.Plugins.Shortcuts
 
             #region Load configuration
 
-            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath) && File.Exists(this.ConfigurationFilePath))
+            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath))
             {
                 string configurationContent = null;
                 if (File.Exists(ConfigurationFilePath))
                     configurationContent = File.ReadAllText(ConfigurationFilePath);
+                else
+                    configurationContent = new StreamReader(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.{this.GetType().Namespace}.json")).ReadToEnd();
 
                 _configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
 
                 if (_configuration != null)
                     ShowLabels = _configuration.ShowLabels;
             }
+
             #endregion
 
             #region Main ContextMenu
@@ -132,7 +133,7 @@ namespace TopBar.Plugins.Shortcuts
             #region Load saved shortcuts
 
             if (_configuration?.Shortcuts != null && _configuration.Shortcuts.Any())
-                LoadShortcuts(_configuration.Shortcuts.Select(s => s.Path).ToArray(), _configuration.ShowLabels);
+                LoadShortcuts(_configuration.Shortcuts, _configuration.ShowLabels);
 
             #endregion
         }
@@ -167,7 +168,7 @@ namespace TopBar.Plugins.Shortcuts
             if (files == null || !files.Any())
                 return;
 
-            LoadShortcuts(files, this.ShowLabels);
+            LoadShortcuts(files.Select(f => new ShortcutConfiguration(f)), this.ShowLabels);
         }
 
         #endregion
@@ -184,59 +185,30 @@ namespace TopBar.Plugins.Shortcuts
             this.ResumeLayout();
         }
 
-        private void LoadShortcuts(Configuration configuration)
+        private void LoadShortcuts(IEnumerable<ShortcutConfiguration> configs, bool showLabel)
         {
-
-        }
-
-        private void LoadShortcuts(IEnumerable<string> paths, bool showLabel)
-        {
-            var fileExtensionsWithIcons = new String[] { ".exe", ".lnk", ".ico" };
-
-            foreach (var path in paths.Where(p =>
-                                !string.IsNullOrWhiteSpace(p))
-                                .Select(p => Environment.ExpandEnvironmentVariables(p))
-                                .Where(p => File.Exists(p) || Directory.Exists(p))
+            foreach (var config in configs.Where(p =>
+                                !string.IsNullOrWhiteSpace(p.Path))
+                                .Where(p => File.Exists(Environment.ExpandEnvironmentVariables(p.Path)) || Directory.Exists(Environment.ExpandEnvironmentVariables(p.Path)))
                                 .ToArray()
                                 )
             {
-                Icon icon = null;
-                if (path.IsDirectory())
-                    icon = Icons.GetIconForFile(path, ShellIconSize.SmallIcon);
+                config.Path = Environment.ExpandEnvironmentVariables(config.Path);
+                var shortcut = new Shortcut(config);
+
+                if (showLabel)
+                    shortcut.ShowLabel();
                 else
+                    shortcut.HideLabel();
+
+                var left = 4;
+                foreach (Control control in this.Controls)
                 {
-                    var extension = Path.GetExtension(path);
-                    icon = fileExtensionsWithIcons.Any(e => e.Equals(extension)) ?
-                        Icons.GetIconForFile(path, ShellIconSize.SmallIcon) :
-                        Icons.GetIconForExtension(extension, ShellIconSize.SmallIcon);
+                    left += control.Width + 4;
                 }
-
-                if (icon != null)
-                {
-                    var shortcut = new Shortcut(path)
-                    {
-                        Icon = icon.ToBitmap(),
-                        Label = Path.GetFileName(path),
-                        Top = 4,
-                        Tag = path
-                    };
-
-                    if (showLabel)
-                        shortcut.ShowLabel();
-                    else
-                        shortcut.HideLabel();
-
-                    var left = 4;
-                    foreach (Control control in this.Controls)
-                    {
-                        left += control.Width + 4;
-                    }
-                    shortcut.Left = left;
-                    shortcut.ContextMenuStrip = _contextMenuStripShortcut;
-                    this.Controls.Add(shortcut);
-
-
-                }
+                shortcut.Left = left;
+                shortcut.ContextMenuStrip = _contextMenuStripShortcut;
+                this.Controls.Add(shortcut);
             }
         }
 
@@ -246,11 +218,7 @@ namespace TopBar.Plugins.Shortcuts
             var configuration = new Configuration()
             {
                 ShowLabels = this.ShowLabels,
-                Shortcuts = shortcutControls.Select(c => new ShortcutConfiguration()
-                {
-                    Path = c.Tag.ToString(),
-                    Label = c.Label,
-                })
+                Shortcuts = shortcutControls.Select(c => c.ShortcutConfiguration)
             };
             var configContent = JsonSerializer.Serialize<Configuration>(
                  configuration,
