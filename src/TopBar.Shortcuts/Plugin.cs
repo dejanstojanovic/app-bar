@@ -11,6 +11,7 @@ namespace TopBar.Plugins.Shortcuts
         readonly ContextMenuStrip _contextMenuStripMain;
         readonly ContextMenuStrip _contextMenuStripShortcut;
         readonly ColorTheme _colorTheme;
+        readonly Configuration _configuration;
 
         public override event EventHandler ApplicationExit = null;
         public override event EventHandler ApplicationRestart = null;
@@ -24,6 +25,21 @@ namespace TopBar.Plugins.Shortcuts
             this.AllowDrop = true;
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
+
+            #region Load configuration
+
+            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath) && File.Exists(this.ConfigurationFilePath))
+            {
+                string configurationContent = null;
+                if (File.Exists(ConfigurationFilePath))
+                    configurationContent = File.ReadAllText(ConfigurationFilePath);
+
+                _configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
+
+                if (_configuration != null)
+                    ShowLabels = _configuration.ShowLabels;
+            }
+            #endregion
 
             #region Main ContextMenu
             _contextMenuStripMain = new ContextMenuStrip()
@@ -53,7 +69,7 @@ namespace TopBar.Plugins.Shortcuts
                     this.ReArrangeShortcuts();
                 }, "ShowHide")
             {
-                Checked = this.Controls.Cast<Shortcut>().Any(s => s.LabelShown)
+                Checked = this.ShowLabels
             });
 
             _contextMenuStripMain.Items.Add("-");
@@ -113,22 +129,10 @@ namespace TopBar.Plugins.Shortcuts
             _contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
             #endregion
 
-            #region Load configuration
+            #region Load saved shortcuts
 
-            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath) && File.Exists(this.ConfigurationFilePath))
-            {
-                string configurationContent = null;
-                if (File.Exists(ConfigurationFilePath))
-                    configurationContent = File.ReadAllText(ConfigurationFilePath);
-
-                var configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
-
-                if (configuration != null)
-                    ShowLabels = configuration.ShowLabels;
-
-                if (configuration?.Shortcuts != null && configuration.Shortcuts.Any())
-                    LoadShortcuts(configuration.Shortcuts.Select(s => s.Path).ToArray(), configuration.ShowLabels);
-            }
+            if (_configuration?.Shortcuts != null && _configuration.Shortcuts.Any())
+                LoadShortcuts(_configuration.Shortcuts.Select(s => s.Path).ToArray(), _configuration.ShowLabels);
 
             #endregion
         }
