@@ -81,7 +81,6 @@ namespace TopBar.Plugins.SystemResources
                     if (this.ApplicationExit != null)
                         this.ApplicationExit.Invoke(this, EventArgs.Empty);
                 }, "Exit"));
-            this.ContextMenuStrip = _contextMenuStripMain;
 
             this.ContextMenuStrip = _contextMenuStripMain;
 

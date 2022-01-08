@@ -25,26 +25,6 @@ namespace TopBar.Plugins.Shortcuts
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
 
-            #region Load configuration
-
-            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath) && File.Exists(this.ConfigurationFilePath))
-            {
-                string configurationContent = null;
-                if (File.Exists(ConfigurationFilePath))
-                    configurationContent = File.ReadAllText(ConfigurationFilePath);
-
-                var configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
-
-                if (configuration != null)
-                    ShowLabels = configuration.ShowLabels;
-
-                if (configuration?.Shortcuts != null && configuration.Shortcuts.Any())
-                    LoadShortcuts(configuration.Shortcuts.Select(s => s.Path).ToArray(), configuration.ShowLabels);
-            }
-
-            #endregion
-
-
             #region Main ContextMenu
             _contextMenuStripMain = new ContextMenuStrip()
             {
@@ -131,6 +111,25 @@ namespace TopBar.Plugins.Shortcuts
             }, "Remove"));
 
             _contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
+            #endregion
+
+            #region Load configuration
+
+            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath) && File.Exists(this.ConfigurationFilePath))
+            {
+                string configurationContent = null;
+                if (File.Exists(ConfigurationFilePath))
+                    configurationContent = File.ReadAllText(ConfigurationFilePath);
+
+                var configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
+
+                if (configuration != null)
+                    ShowLabels = configuration.ShowLabels;
+
+                if (configuration?.Shortcuts != null && configuration.Shortcuts.Any())
+                    LoadShortcuts(configuration.Shortcuts.Select(s => s.Path).ToArray(), configuration.ShowLabels);
+            }
+
             #endregion
         }
 
