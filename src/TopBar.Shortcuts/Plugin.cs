@@ -168,7 +168,9 @@ namespace TopBar.Plugins.Shortcuts
             if (files == null || !files.Any())
                 return;
 
-            LoadShortcuts(files.Select(f => new ShortcutConfiguration(f)), this.ShowLabels);
+            LoadShortcuts(files.Select(f => f.IsDirectory() ? f : (Path.GetExtension(f).Equals(".lnk", StringComparison.InvariantCultureIgnoreCase) ? f.GetShortcutTarget() : f))
+                .Select(f => new ShortcutConfiguration(f)),
+                this.ShowLabels);
         }
 
         #endregion
