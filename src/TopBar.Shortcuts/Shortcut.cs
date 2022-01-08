@@ -122,10 +122,12 @@ namespace TopBar.Plugins.Shortcuts
             if (this.BackColor != Color.Transparent ||
                 this.Controls.Cast<Control>().Any(c => c.BackColor != Color.Transparent))
             {
-                foreach (Control control in this.Controls)
+                foreach (Control control in this.Controls.Cast<Control>().Concat(new Control[] { this }))
+                {
                     control.BackColor = Color.Transparent;
+                    control.ForeColor = _colorTheme.TextColor;
+                }
 
-                this.BackColor = Color.Transparent;
             }
         }
 
@@ -187,10 +189,11 @@ namespace TopBar.Plugins.Shortcuts
 
         private void Shortcut_MouseEnter(object? sender, EventArgs e)
         {
-            foreach (Control control in this.Controls)
-                control.BackColor = _colorTheme.HoverColor;
-
-            this.BackColor = _colorTheme.HoverColor;
+            foreach (Control control in this.Controls.Cast<Control>().Concat(new Control[] { this }))
+            {
+                control.BackColor = _colorTheme.HoverBackgroundColor;
+                control.ForeColor = _colorTheme.HoverTextColor;
+            }
 
         }
 

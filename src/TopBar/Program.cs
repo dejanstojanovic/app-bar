@@ -48,12 +48,14 @@ namespace TopBar
 
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddSingleton<ColorTheme>(new ColorTheme()
-            {
-                BackgroudColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.BackgroudColor)}")),
-                TextColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.TextColor)}")),
-                HoverColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.HoverColor)}"))
-            });
+            services.AddSingleton<ColorTheme>(new ColorTheme());
+
+            //services.AddSingleton<ColorTheme>(new ColorTheme()
+            //{
+            //    BackgroudColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.BackgroudColor)}")),
+            //    TextColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.TextColor)}")),
+            //    HoverBackgroundColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.HoverBackgroundColor)}"))
+            //});
 
 
         }
