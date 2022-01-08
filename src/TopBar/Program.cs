@@ -18,14 +18,18 @@ namespace TopBar
             if (canCreateInstance)
             {
                 ApplicationConfiguration.Initialize();
-
                 var services = new ServiceCollection();
-
                 ConfigureServices(services);
-
+                
                 using (ServiceProvider serviceProvider = services.BuildServiceProvider())
                 {
                     var mainForm = serviceProvider.GetRequiredService<MainForm>();
+                    AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+                    {
+                        if (mainForm != null)
+                            mainForm.RegisterBar();
+                    };
+
                     Application.Run(mainForm);
                 }
                 mutex.ReleaseMutex();
@@ -47,7 +51,6 @@ namespace TopBar
                 IConfiguration config = configBuilder.Build();
 
             services.AddSingleton<IConfiguration>(config);
-
             services.AddSingleton<ColorTheme>(new ColorTheme());
 
             //services.AddSingleton<ColorTheme>(new ColorTheme()

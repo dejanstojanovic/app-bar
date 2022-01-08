@@ -77,7 +77,7 @@ namespace TopBar
 
         private int uCallBack;
 
-        protected void RegisterBar()
+        public void RegisterBar()
         {
             APPBARDATA abd = new APPBARDATA();
             abd.cbSize = Marshal.SizeOf(abd);
