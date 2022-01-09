@@ -32,9 +32,8 @@ namespace TopBar.Plugins.Shortcuts
         public ShortcutConfiguration(string path)
         {
             this.Path = Environment.ExpandEnvironmentVariables(path);
-            if(path.IsDirectory())
-                this.Label = System.IO.Path.GetDirectoryName(path);
-            else if (System.IO.Path.GetExtension(path).Equals(".exe", StringComparison.InvariantCultureIgnoreCase))
+
+            if (System.IO.Path.GetExtension(path).Equals(".exe", StringComparison.InvariantCultureIgnoreCase))
             {
                 var description = FileVersionInfo.GetVersionInfo(path).FileDescription;
                 if (string.IsNullOrEmpty(description))

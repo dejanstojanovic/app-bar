@@ -85,18 +85,13 @@ namespace TopBar.Plugins.Shortcuts
             _label.Text = _shortcutConfiguration.Label;
 
 
-            foreach (Control control in this.Controls)
+            foreach (Control control in this.Controls.Cast<Control>().Concat(new Control[] { this }))
             {
                 control.MouseEnter += Shortcut_MouseEnter;
                 control.MouseLeave += Shortcut_MouseLeave;
                 control.Click += Shortcut_Click;
                 control.MouseHover += Shortcut_MouseHover;
             }
-
-            this.MouseEnter += Shortcut_MouseEnter;
-            this.MouseLeave += Shortcut_MouseLeave;
-            this.Click += Shortcut_Click;
-            this.MouseHover += Shortcut_MouseHover;
 
         }
 
@@ -238,10 +233,10 @@ namespace TopBar.Plugins.Shortcuts
         {
             var shortcut = sender as Control;
             if (shortcut != null &&
-                this.Tag != null &&
-                !string.IsNullOrWhiteSpace(this.Tag.ToString()))
+                this.ShortcutConfiguration !=null &&
+                !string.IsNullOrWhiteSpace(this.ShortcutConfiguration.Path))
             {
-                _toolTip.SetToolTip(shortcut, this.Tag.ToString());
+                _toolTip.SetToolTip(shortcut, this.ShortcutConfiguration.Path);
             }
         }
 
