@@ -18,10 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="cpu_black.png" />
-    <EmbeddedResource Include="cpu_white.png" />
-    <EmbeddedResource Include="ram_black.png" />
-    <EmbeddedResource Include="ram_white.png" />
+    <EmbeddedResource Include="Icons\cpu_black.png" />
+    <EmbeddedResource Include="Icons\cpu_white.png" />
+    <EmbeddedResource Include="Icons\ram_black.png" />
+    <EmbeddedResource Include="Icons\ram_white.png" />
   </ItemGroup>
 
   <ItemGroup>

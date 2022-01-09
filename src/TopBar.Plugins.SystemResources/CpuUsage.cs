@@ -45,7 +45,7 @@ namespace TopBar.Plugins.SystemResources
             _pictureBox = new PictureBox()
             {
                 Width = 16,
-                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.cpu_{iconColor}.png")),
+                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.Icons.cpu_{iconColor}.png")),
                 SizeMode = PictureBoxSizeMode.CenterImage,
                 Dock = DockStyle.Left
             };
