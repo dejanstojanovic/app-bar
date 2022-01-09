@@ -31,6 +31,7 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
             this.listviewShorcuts = new System.Windows.Forms.ListView();
+            this.headerText = new System.Windows.Forms.ColumnHeader();
             this.buttonMoveUp = new System.Windows.Forms.Button();
             this.buttonMoveDown = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -57,12 +58,20 @@
             // 
             // listviewShorcuts
             // 
+            this.listviewShorcuts.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.headerText});
+            this.listviewShorcuts.FullRowSelect = true;
             this.listviewShorcuts.Location = new System.Drawing.Point(57, 12);
             this.listviewShorcuts.Name = "listviewShorcuts";
             this.listviewShorcuts.Size = new System.Drawing.Size(360, 403);
             this.listviewShorcuts.TabIndex = 4;
             this.listviewShorcuts.UseCompatibleStateImageBehavior = false;
             this.listviewShorcuts.View = System.Windows.Forms.View.Details;
+            // 
+            // headerText
+            // 
+            this.headerText.Text = "";
+            this.headerText.Width = 350;
             // 
             // buttonMoveUp
             // 
@@ -112,5 +121,6 @@
         private ListView listviewShorcuts;
         private Button buttonMoveUp;
         private Button buttonMoveDown;
+        private ColumnHeader headerText;
     }
 }

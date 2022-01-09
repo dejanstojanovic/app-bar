@@ -6,9 +6,13 @@
 
         public IEnumerable<Shortcut> Shortcuts => _shortcuts;
 
-        public PluginOptionsForm(IEnumerable<Shortcut> shortcuts):this()
+        public PluginOptionsForm(IEnumerable<Shortcut> shortcuts) : this()
         {
             _shortcuts = shortcuts;
+            this.listviewShorcuts.Items.AddRange(
+                _shortcuts.Select(s => new ListViewItem() { 
+                    Text = s.ShortcutConfiguration.Label
+                }).ToArray());
         }
 
         public PluginOptionsForm()
