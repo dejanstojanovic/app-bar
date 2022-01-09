@@ -60,7 +60,7 @@ namespace TopBar.Plugins.Shortcuts
                 new ToolStripMenuItem("Options", null,
                         (sender, e) =>
                         {
-                            using(var optionsForm =  new PluginOptionsForm())
+                            using(var optionsForm =  new PluginOptionsForm(this.Controls.Cast<Shortcut>()))
                             {
                                 optionsForm.ShowDialog();
                             }

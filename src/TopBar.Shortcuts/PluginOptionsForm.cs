@@ -1,7 +1,16 @@
 ﻿namespace TopBar.Plugins.Shortcuts
 {
-    public partial class PluginOptionsForm : Form
+    internal partial class PluginOptionsForm : Form
     {
+        readonly IEnumerable<Shortcut> _shortcuts;
+
+        public IEnumerable<Shortcut> Shortcuts => _shortcuts;
+
+        public PluginOptionsForm(IEnumerable<Shortcut> shortcuts):this()
+        {
+            _shortcuts = shortcuts;
+        }
+
         public PluginOptionsForm()
         {
             InitializeComponent();
