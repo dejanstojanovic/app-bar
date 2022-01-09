@@ -202,10 +202,15 @@ namespace TopBar
 
         readonly IEnumerable<IPlugin> _plugins;
         readonly ColorTheme _colorTheme;
+        readonly ContextMenuStrip _contextMenuStripMain;
 
         public MainForm(IEnumerable<IPlugin> plugins, ColorTheme colorTheme)
         {
-            
+            _contextMenuStripMain = new ContextMenuStrip()
+            {
+                RenderMode = ToolStripRenderMode.System,
+            };
+
             _colorTheme = colorTheme;
             _plugins = plugins;
             InitializeComponent();
@@ -219,12 +224,38 @@ namespace TopBar
 
             this.FormClosing += MainForm_FormClosing;
 
-            foreach (PluginBase plugin in _plugins.Where(p=> p is PluginBase))
+            this.ContextMenuStrip = _contextMenuStripMain;
+            foreach (PluginBase plugin in _plugins.Where(p => p is PluginBase))
             {
+                var pluginMenu = new ToolStripMenuItem(plugin.Name);
+
+                if (plugin.MenuItems != null)
+                    pluginMenu.DropDownItems.AddRange(plugin.MenuItems.ToArray());
+
+                if (pluginMenu.HasDropDownItems)
+                    _contextMenuStripMain.Items.Add(pluginMenu);
+
                 this.Controls.Add(plugin);
                 plugin.ApplicationExit += Plugin_ApplicationExit;
                 plugin.ApplicationRestart += Plugin_ApplicationRestart;
+
+                plugin.ContextMenuStrip = _contextMenuStripMain;
             }
+
+            _contextMenuStripMain.Items.Add("-");
+
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart application", null,
+                (sender, e) =>
+                {
+                    ExitApplication(true);
+                }, "Restart"));
+            this.ContextMenuStrip = _contextMenuStripMain;
+
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
+                (sender, e) =>
+                {
+                    ExitApplication(false);
+                }, "Exit"));
         }
 
         private void Plugin_ApplicationRestart(object? sender, EventArgs e)
@@ -239,7 +270,7 @@ namespace TopBar
 
             RegisterBar();
 
-            if(restart)
+            if (restart)
                 Application.Restart();
 
             Process.GetCurrentProcess().Kill();

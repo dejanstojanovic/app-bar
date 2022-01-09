@@ -6,14 +6,21 @@ namespace TopBar.Plugins.Shortcuts
     public class Plugin : PluginBase
     {
 
-        readonly ContextMenuStrip _contextMenuStripMain;
+        //readonly ContextMenuStrip _contextMenuStripMain;
         readonly ContextMenuStrip _contextMenuStripShortcut;
         readonly ColorTheme _colorTheme;
         readonly Configuration _configuration;
 
         public override event EventHandler ApplicationExit = null;
         public override event EventHandler ApplicationRestart = null;
+
+        readonly IEnumerable<ToolStripMenuItem> _menuItems;
+
         public bool ShowLabels { get; set; }
+
+        public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
+
+        public override string Name => "Shortcuts";
 
         public Plugin() : base()
         {
@@ -42,56 +49,36 @@ namespace TopBar.Plugins.Shortcuts
 
             #endregion
 
-            #region Main ContextMenu
-            _contextMenuStripMain = new ContextMenuStrip()
-            {
-                RenderMode = ToolStripRenderMode.System,
-            };
+            #region Plugin ContextMenu
 
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Labels", null,
-                (sender, e) =>
-                {
-                    var contextItem = sender as ToolStripMenuItem;
-                    this.ShowLabels = !this.ShowLabels;
-                    var show = this.ShowLabels;
-                    if (contextItem != null && show)
-                        contextItem.Checked = true;
-                    else if (contextItem != null)
-                        contextItem.Checked = false;
+            _menuItems = new ToolStripMenuItem[] {
+                new ToolStripMenuItem("Labels", null,
+                        (sender, e) =>
+                        {
+                            var contextItem = sender as ToolStripMenuItem;
+                            this.ShowLabels = !this.ShowLabels;
+                            var show = this.ShowLabels;
+                            if (contextItem != null && show)
+                                contextItem.Checked = true;
+                            else if (contextItem != null)
+                                contextItem.Checked = false;
 
-                    foreach (Shortcut shortcut in this.Controls)
+                            foreach (Shortcut shortcut in this.Controls)
+                            {
+                                if (show)
+                                    shortcut.ShowLabel();
+                                else
+                                    shortcut.HideLabel();
+
+                            }
+                            this.ReArrangeShortcuts();
+                        }, "ShowHide")
                     {
-                        if (show)
-                            shortcut.ShowLabel();
-                        else
-                            shortcut.HideLabel();
-
+                        Checked = this.ShowLabels
                     }
-                    this.ReArrangeShortcuts();
-                }, "ShowHide")
-            {
-                Checked = this.ShowLabels
-            });
+                };
 
-            _contextMenuStripMain.Items.Add("-");
-
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart application", null,
-                (sender, e) =>
-                {
-                    if (this.ApplicationRestart != null)
-                        this.ApplicationRestart.Invoke(this, EventArgs.Empty);
-                }, "Restart"));
-            this.ContextMenuStrip = _contextMenuStripMain;
-
-            _contextMenuStripMain.Items.Add("-");
-
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
-                (sender, e) =>
-                {
-                    if (this.ApplicationExit != null)
-                        this.ApplicationExit.Invoke(this, EventArgs.Empty);
-                }, "Exit"));
-            this.ContextMenuStrip = _contextMenuStripMain;
+           
             #endregion
 
             #region Shortcut ContextMenu

@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using Forms = System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 
 namespace TopBar.Plugins.SystemResources
 {
@@ -10,11 +8,14 @@ namespace TopBar.Plugins.SystemResources
         public override event EventHandler ApplicationExit=null;
         public override event EventHandler ApplicationRestart = null;
 
-
-        readonly ContextMenuStrip _contextMenuStripMain;
         readonly ColorTheme _colorTheme;
         readonly CpuUsage _cpuUsage;
         readonly RamUsage _ramUsage;
+        readonly IEnumerable<ToolStripMenuItem> _menuItems;
+
+        public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
+
+        public override string Name => "System resources";
 
         public Plugin() : base()
         {
@@ -37,11 +38,7 @@ namespace TopBar.Plugins.SystemResources
             this.Controls.Add(_ramUsage);
 
 
-            _contextMenuStripMain = new ContextMenuStrip()
-            {
-                RenderMode = ToolStripRenderMode.System,
-            };
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Resource Monitor", null,
+            _menuItems = new ToolStripMenuItem[] {new ToolStripMenuItem("Resource Monitor", null,
                 (sender, e) =>
                     {
                         var windowsFolder = Environment.GetEnvironmentVariable("windir");
@@ -51,40 +48,16 @@ namespace TopBar.Plugins.SystemResources
                         p.StartInfo.Arguments = Path.Combine(windowsFolder, "System32", "perfmon.msc") + " /s";
                         p.StartInfo.UseShellExecute = true;
                         p.Start();
-                    }, "ResourceMonitor"));
-
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Task Manager", null,
+                    }, "ResourceMonitor"),
+            new ToolStripMenuItem("Task Manager", null,
                 (sender, e) =>
                 {
                     Process p = new Process();
                     p.StartInfo.FileName = "taskmgr";
                     p.StartInfo.UseShellExecute = true;
                     p.Start();
-                }, "TaskManager"));
-
-            _contextMenuStripMain.Items.Add("-");
-
-
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart application", null,
-                (sender, e) =>
-                {
-                    if (this.ApplicationRestart != null)
-                        this.ApplicationRestart.Invoke(this, EventArgs.Empty);
-                }, "Restart"));
-            this.ContextMenuStrip = _contextMenuStripMain;
-
-            _contextMenuStripMain.Items.Add("-");
-
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
-                (sender, e) =>
-                {
-                    if (this.ApplicationExit != null)
-                        this.ApplicationExit.Invoke(this, EventArgs.Empty);
-                }, "Exit"));
-
-            this.ContextMenuStrip = _contextMenuStripMain;
-
-
+                }, "TaskManager")
+            };
 
         }
 
