@@ -5,14 +5,9 @@ namespace TopBar.Plugins.Shortcuts
 {
     public class Plugin : PluginBase
     {
-
-        //readonly ContextMenuStrip _contextMenuStripMain;
         readonly ContextMenuStrip _contextMenuStripShortcut;
         readonly ColorTheme _colorTheme;
         readonly Configuration _configuration;
-
-        public override event EventHandler ApplicationExit = null;
-        public override event EventHandler ApplicationRestart = null;
 
         readonly IEnumerable<ToolStripMenuItem> _menuItems;
 

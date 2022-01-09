@@ -1,8 +1,5 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing.Imaging;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using TopBar.Extensions;
 using TopBar.Plugins;
 
 namespace TopBar
@@ -236,8 +233,6 @@ namespace TopBar
                     _contextMenuStripMain.Items.Add(pluginMenu);
 
                 this.Controls.Add(plugin);
-                plugin.ApplicationExit += Plugin_ApplicationExit;
-                plugin.ApplicationRestart += Plugin_ApplicationRestart;
 
                 plugin.ContextMenuStrip = _contextMenuStripMain;
             }
@@ -256,11 +251,6 @@ namespace TopBar
                 {
                     ExitApplication(false);
                 }, "Exit"));
-        }
-
-        private void Plugin_ApplicationRestart(object? sender, EventArgs e)
-        {
-            ExitApplication(true);
         }
 
         private async void ExitApplication(bool restart)
@@ -286,11 +276,6 @@ namespace TopBar
             RegisterBar();
             Process.GetCurrentProcess().Kill();
 
-        }
-
-        private void Plugin_ApplicationExit(object? sender, EventArgs e)
-        {
-            ExitApplication();
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)

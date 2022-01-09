@@ -5,22 +5,35 @@ namespace TopBar.Plugins.SystemResources
 {
     public class Plugin : PluginBase
     {
-
-        public override event EventHandler ApplicationExit = null;
-        public override event EventHandler ApplicationRestart = null;
-
         readonly ColorTheme _colorTheme;
         readonly CpuUsage _cpuUsage;
         readonly RamUsage _ramUsage;
         readonly IEnumerable<ToolStripMenuItem> _menuItems;
 
+        readonly Configuration _configuration;
+
         public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
 
         public override string Name => "System resources";
 
-        public Plugin() : base()
+        public Plugin(ColorTheme colorTheme) : base()
         {
-            _colorTheme = new ColorTheme();
+            _colorTheme = colorTheme;
+
+            #region Load configuration
+
+            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath))
+            {
+                string configurationContent = null;
+                if (File.Exists(ConfigurationFilePath))
+                    configurationContent = File.ReadAllText(ConfigurationFilePath);
+                else
+                    configurationContent = new StreamReader(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.{this.GetType().Namespace}.json")).ReadToEnd();
+
+                _configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
+            }
+
+            #endregion
 
             _cpuUsage = new CpuUsage()
             {
@@ -32,24 +45,55 @@ namespace TopBar.Plugins.SystemResources
                 Dock = DockStyle.Right
             };
 
-            this.Width = _cpuUsage.Width + _ramUsage.Width;
+            if (_configuration.ShowCPU)
+                _cpuUsage.Enable();
+            else
+                _cpuUsage.Disable();
+
+            if (_configuration.ShowRAM)
+                _ramUsage.Enable();
+            else
+                _ramUsage.Disable();
+
+            this.Resize();
+            
             this.Dock = DockStyle.Right;
 
             this.Controls.Add(_cpuUsage);
             this.Controls.Add(_ramUsage);
 
-
             _menuItems = new ToolStripMenuItem[] {
                 new ToolStripMenuItem("CPU usage", null,
                 (sender, e) =>
                     {
-                        _cpuUsage.Visible = !_cpuUsage.Visible;
-                    },"Cpu"),
+                        _configuration.ShowCPU=!_configuration.ShowCPU;
+
+                        if(_configuration.ShowCPU)
+                            _cpuUsage.Enable();
+                        else
+                            _cpuUsage.Disable();
+
+                        this.Resize();
+                        var item = sender as ToolStripMenuItem;
+                        if(item != null)
+                            item.Checked = _configuration.ShowCPU;
+
+                    },"Cpu"){Checked = _configuration.ShowCPU},
                 new ToolStripMenuItem("RAM usage", null,
                 (sender, e) =>
                     {
-                        _ramUsage.Visible = !_ramUsage.Visible;
-                    },"Ram"),
+                        _configuration.ShowRAM=!_configuration.ShowRAM;
+
+                        if(_configuration.ShowRAM)
+                            _ramUsage.Enable();
+                        else
+                            _ramUsage.Disable();
+
+                        this.Resize();
+                        var item = sender as ToolStripMenuItem;
+                        if(item != null)
+                            item.Checked = _configuration.ShowRAM;
+                    },"Ram"){Checked = _configuration.ShowRAM},
             new ToolStripMenuItem("Open Resource Monitor", null,
                 (sender, e) =>
                     {
@@ -73,9 +117,15 @@ namespace TopBar.Plugins.SystemResources
 
         }
 
+        private void Resize()
+        {
+            this.Width = (_cpuUsage.Enabled ? _cpuUsage.Width :0) +
+                (_ramUsage.Enabled ? _ramUsage.Width : 0);
+        }
+
         public override async Task SaveConfig()
         {
-            var configuration =  new Configuration()
+            var configuration = new Configuration()
             {
                 ShowCPU = _cpuUsage.Visible,
                 ShowRAM = _ramUsage.Visible

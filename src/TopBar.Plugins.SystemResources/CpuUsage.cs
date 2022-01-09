@@ -3,7 +3,7 @@ using Forms = System.Windows.Forms;
 
 namespace TopBar.Plugins.SystemResources
 {
-    internal class CpuUsage : Panel
+    internal class CpuUsage : Panel, IResourcePlugin
     {
         readonly ToolTip _toolTip;
         readonly Label _label;
@@ -68,12 +68,12 @@ namespace TopBar.Plugins.SystemResources
             {
                 Interval = 1000
             };
-
             _timer.Tick += Timer_Tick;
-            _timer.Start();
 
-            Timer_Tick(_timer, new EventArgs());
+            //_timer.Start();
+            //Timer_Tick(_timer, new EventArgs());
         }
+
 
         private async void Timer_Tick(object? sender, EventArgs e)
         {
@@ -94,6 +94,24 @@ namespace TopBar.Plugins.SystemResources
             {
                 _toolTip.SetToolTip(shortcut, "CPU");
             }
+        }
+
+        public void Enable()
+        {
+            _label.Text = $"---.--";
+            _timer.Enabled = true;
+            _timer.Start();
+            this.Visible = true;
+            this.Enabled = true;
+        }
+
+        public void Disable()
+        {
+            _timer.Enabled = false;
+            _timer.Stop();
+            _label.Text = $"---.--";
+            this.Visible = false;
+            this.Enabled = false;
         }
     }
 }
