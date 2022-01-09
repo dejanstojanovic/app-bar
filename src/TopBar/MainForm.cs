@@ -239,14 +239,14 @@ namespace TopBar
 
             _contextMenuStripMain.Items.Add("-");
 
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart application", null,
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart bar", null,
                 (sender, e) =>
                 {
                     ExitApplication(true);
                 }, "Restart"));
             this.ContextMenuStrip = _contextMenuStripMain;
 
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Close bar", null,
                 (sender, e) =>
                 {
                     ExitApplication(false);

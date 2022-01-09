@@ -56,7 +56,15 @@ namespace TopBar.Plugins.Shortcuts
                         }, "ShowHide")
                     {
                         Checked = this.ShowLabels
-                    }
+                    },
+                new ToolStripMenuItem("Options", null,
+                        (sender, e) =>
+                        {
+                            using(var optionsForm =  new PluginOptionsForm())
+                            {
+                                optionsForm.ShowDialog();
+                            }
+                        },"Options")
                 };
 
 
