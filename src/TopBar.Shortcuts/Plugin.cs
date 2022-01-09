@@ -26,23 +26,9 @@ namespace TopBar.Plugins.Shortcuts
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
 
-            #region Load configuration
-
-            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath))
-            {
-                string configurationContent = null;
-                if (File.Exists(ConfigurationFilePath))
-                    configurationContent = File.ReadAllText(ConfigurationFilePath);
-                else
-                    configurationContent = new StreamReader(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.{this.GetType().Namespace}.json")).ReadToEnd();
-
-                _configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
-
-                if (_configuration != null)
-                    ShowLabels = _configuration.ShowLabels;
-            }
-
-            #endregion
+            _configuration = LoadConfiguration(typeof(Configuration)) as Configuration;
+            if (_configuration != null)
+                ShowLabels = _configuration.ShowLabels;
 
             #region Plugin ContextMenu
 
@@ -73,7 +59,7 @@ namespace TopBar.Plugins.Shortcuts
                     }
                 };
 
-           
+
             #endregion
 
             #region Shortcut ContextMenu
@@ -196,7 +182,7 @@ namespace TopBar.Plugins.Shortcuts
             }
         }
 
-        public async override Task SaveConfig()
+        public async override Task SaveConfiguration()
         {
             var shortcutControls = this.Controls.Cast<Shortcut>();
             var configuration = new Configuration()

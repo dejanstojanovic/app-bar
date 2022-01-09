@@ -20,20 +20,7 @@ namespace TopBar.Plugins.SystemResources
         {
             _colorTheme = colorTheme;
 
-            #region Load configuration
-
-            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath))
-            {
-                string configurationContent = null;
-                if (File.Exists(ConfigurationFilePath))
-                    configurationContent = File.ReadAllText(ConfigurationFilePath);
-                else
-                    configurationContent = new StreamReader(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.{this.GetType().Namespace}.json")).ReadToEnd();
-
-                _configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
-            }
-
-            #endregion
+            _configuration = LoadConfiguration(typeof(Configuration)) as Configuration;
 
             _cpuUsage = new CpuUsage()
             {
@@ -123,7 +110,7 @@ namespace TopBar.Plugins.SystemResources
                 (_ramUsage.Enabled ? _ramUsage.Width : 0);
         }
 
-        public override async Task SaveConfig()
+        public override async Task SaveConfiguration()
         {
             var configuration = new Configuration()
             {

@@ -256,7 +256,7 @@ namespace TopBar
         private async void ExitApplication(bool restart)
         {
             foreach (var plugin in _plugins)
-                await plugin.SaveConfig();
+                await plugin.SaveConfiguration();
 
             RegisterBar();
 
@@ -271,7 +271,7 @@ namespace TopBar
         {
 
             foreach (var plugin in _plugins)
-                await plugin.SaveConfig();
+                await plugin.SaveConfiguration();
 
             RegisterBar();
             Process.GetCurrentProcess().Kill();

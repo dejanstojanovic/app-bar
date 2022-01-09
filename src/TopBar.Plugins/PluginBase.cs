@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 
 namespace TopBar.Plugins
 {
@@ -21,7 +22,21 @@ namespace TopBar.Plugins
             }
         }
 
-        public abstract Task SaveConfig();
+        public abstract Task SaveConfiguration();
 
+        public object LoadConfiguration(Type type)
+        {
+            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath))
+            {
+                string configurationContent = null;
+                if (File.Exists(ConfigurationFilePath))
+                    configurationContent = File.ReadAllText(ConfigurationFilePath);
+                else
+                    configurationContent = new StreamReader(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.{this.GetType().Namespace}.json")).ReadToEnd();
+
+                return JsonSerializer.Deserialize(configurationContent,type);
+            }
+            return null;
+        }
     }
 }
