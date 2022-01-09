@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using TopBar.Plugins;
+using TopBar.Plugins.Extensions;
 
 namespace TopBar
 {
@@ -222,6 +223,8 @@ namespace TopBar
             this.FormClosing += MainForm_FormClosing;
 
             this.ContextMenuStrip = _contextMenuStripMain;
+            
+            
             foreach (PluginBase plugin in _plugins.Where(p => p is PluginBase))
             {
                 var pluginMenu = new ToolStripMenuItem(plugin.Name);
@@ -236,6 +239,7 @@ namespace TopBar
 
                 plugin.ContextMenuStrip = _contextMenuStripMain;
             }
+            
 
             _contextMenuStripMain.Items.Add("-");
 

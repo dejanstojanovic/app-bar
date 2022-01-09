@@ -1,5 +1,6 @@
 ﻿using TopBar.Plugins.Shortcuts.Extensions;
 using System.Text.Json;
+using TopBar.Plugins.Extensions;
 
 namespace TopBar.Plugins.Shortcuts
 {
@@ -62,7 +63,13 @@ namespace TopBar.Plugins.Shortcuts
                         {
                             using(var optionsForm =  new PluginOptionsForm(this.Controls.Cast<Shortcut>()))
                             {
-                                optionsForm.ShowDialog();
+                                if (optionsForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    this.FindForm().LockWindowUpdate();
+                                    this.Controls.Clear();
+                                    this.AddShortcuts(optionsForm.ShortcutConfigurations, this.ShowLabels);
+                                    this.FindForm().UnlockWindowUpdate();
+                                }
                             }
                         },"Options")
                 };
