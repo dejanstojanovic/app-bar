@@ -1,24 +1,39 @@
 ﻿using System.Diagnostics;
-using Forms = System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
+using System.Text.Json;
 
 namespace TopBar.Plugins.SystemResources
 {
     public class Plugin : PluginBase
     {
-
-        public override event EventHandler ApplicationExit=null;
-        public override event EventHandler ApplicationRestart = null;
-
-
-        readonly ContextMenuStrip _contextMenuStripMain;
         readonly ColorTheme _colorTheme;
         readonly CpuUsage _cpuUsage;
         readonly RamUsage _ramUsage;
+        readonly IEnumerable<ToolStripMenuItem> _menuItems;
 
-        public Plugin() : base()
+        readonly Configuration _configuration;
+
+        public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
+
+        public override string Name => "System resources";
+
+        public Plugin(ColorTheme colorTheme) : base()
         {
-            _colorTheme = new ColorTheme();
+            _colorTheme = colorTheme;
+
+            #region Load configuration
+
+            if (!string.IsNullOrWhiteSpace(this.ConfigurationFilePath))
+            {
+                string configurationContent = null;
+                if (File.Exists(ConfigurationFilePath))
+                    configurationContent = File.ReadAllText(ConfigurationFilePath);
+                else
+                    configurationContent = new StreamReader(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.{this.GetType().Namespace}.json")).ReadToEnd();
+
+                _configuration = JsonSerializer.Deserialize<Configuration>(configurationContent);
+            }
+
+            #endregion
 
             _cpuUsage = new CpuUsage()
             {
@@ -30,18 +45,56 @@ namespace TopBar.Plugins.SystemResources
                 Dock = DockStyle.Right
             };
 
-            this.Width = _cpuUsage.Width + _ramUsage.Width;
+            if (_configuration.ShowCPU)
+                _cpuUsage.Enable();
+            else
+                _cpuUsage.Disable();
+
+            if (_configuration.ShowRAM)
+                _ramUsage.Enable();
+            else
+                _ramUsage.Disable();
+
+            this.Resize();
+            
             this.Dock = DockStyle.Right;
 
             this.Controls.Add(_cpuUsage);
             this.Controls.Add(_ramUsage);
 
+            _menuItems = new ToolStripMenuItem[] {
+                new ToolStripMenuItem("CPU usage", null,
+                (sender, e) =>
+                    {
+                        _configuration.ShowCPU=!_configuration.ShowCPU;
 
-            _contextMenuStripMain = new ContextMenuStrip()
-            {
-                RenderMode = ToolStripRenderMode.System,
-            };
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Resource Monitor", null,
+                        if(_configuration.ShowCPU)
+                            _cpuUsage.Enable();
+                        else
+                            _cpuUsage.Disable();
+
+                        this.Resize();
+                        var item = sender as ToolStripMenuItem;
+                        if(item != null)
+                            item.Checked = _configuration.ShowCPU;
+
+                    },"Cpu"){Checked = _configuration.ShowCPU},
+                new ToolStripMenuItem("RAM usage", null,
+                (sender, e) =>
+                    {
+                        _configuration.ShowRAM=!_configuration.ShowRAM;
+
+                        if(_configuration.ShowRAM)
+                            _ramUsage.Enable();
+                        else
+                            _ramUsage.Disable();
+
+                        this.Resize();
+                        var item = sender as ToolStripMenuItem;
+                        if(item != null)
+                            item.Checked = _configuration.ShowRAM;
+                    },"Ram"){Checked = _configuration.ShowRAM},
+            new ToolStripMenuItem("Open Resource Monitor", null,
                 (sender, e) =>
                     {
                         var windowsFolder = Environment.GetEnvironmentVariable("windir");
@@ -51,47 +104,41 @@ namespace TopBar.Plugins.SystemResources
                         p.StartInfo.Arguments = Path.Combine(windowsFolder, "System32", "perfmon.msc") + " /s";
                         p.StartInfo.UseShellExecute = true;
                         p.Start();
-                    }, "ResourceMonitor"));
-
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Task Manager", null,
+                    }, "ResourceMonitor"),
+            new ToolStripMenuItem("Open Task Manager", null,
                 (sender, e) =>
-                {
-                    Process p = new Process();
-                    p.StartInfo.FileName = "taskmgr";
-                    p.StartInfo.UseShellExecute = true;
-                    p.Start();
-                }, "TaskManager"));
+                    {
+                        Process p = new Process();
+                        p.StartInfo.FileName = "taskmgr";
+                        p.StartInfo.UseShellExecute = true;
+                        p.Start();
+                    }, "TaskManager")
+            };
 
-            _contextMenuStripMain.Items.Add("-");
+        }
 
-
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart application", null,
-                (sender, e) =>
-                {
-                    if (this.ApplicationRestart != null)
-                        this.ApplicationRestart.Invoke(this, EventArgs.Empty);
-                }, "Restart"));
-            this.ContextMenuStrip = _contextMenuStripMain;
-
-            _contextMenuStripMain.Items.Add("-");
-
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
-                (sender, e) =>
-                {
-                    if (this.ApplicationExit != null)
-                        this.ApplicationExit.Invoke(this, EventArgs.Empty);
-                }, "Exit"));
-            this.ContextMenuStrip = _contextMenuStripMain;
-
-            this.ContextMenuStrip = _contextMenuStripMain;
-
-
-
+        private void Resize()
+        {
+            this.Width = (_cpuUsage.Enabled ? _cpuUsage.Width :0) +
+                (_ramUsage.Enabled ? _ramUsage.Width : 0);
         }
 
         public override async Task SaveConfig()
         {
-            await Task.CompletedTask;
+            var configuration = new Configuration()
+            {
+                ShowCPU = _cpuUsage.Visible,
+                ShowRAM = _ramUsage.Visible
+            };
+
+            var configContent = JsonSerializer.Serialize<Configuration>(
+                 configuration,
+                 new JsonSerializerOptions()
+                 {
+                     WriteIndented = true
+                 });
+
+            await File.WriteAllTextAsync(path: this.ConfigurationFilePath, configContent);
         }
     }
 }

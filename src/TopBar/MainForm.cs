@@ -1,8 +1,5 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing.Imaging;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using TopBar.Extensions;
 using TopBar.Plugins;
 
 namespace TopBar
@@ -77,7 +74,7 @@ namespace TopBar
 
         private int uCallBack;
 
-        protected void RegisterBar()
+        public void RegisterBar()
         {
             APPBARDATA abd = new APPBARDATA();
             abd.cbSize = Marshal.SizeOf(abd);
@@ -202,10 +199,15 @@ namespace TopBar
 
         readonly IEnumerable<IPlugin> _plugins;
         readonly ColorTheme _colorTheme;
+        readonly ContextMenuStrip _contextMenuStripMain;
 
         public MainForm(IEnumerable<IPlugin> plugins, ColorTheme colorTheme)
         {
-            
+            _contextMenuStripMain = new ContextMenuStrip()
+            {
+                RenderMode = ToolStripRenderMode.System,
+            };
+
             _colorTheme = colorTheme;
             _plugins = plugins;
             InitializeComponent();
@@ -219,17 +221,36 @@ namespace TopBar
 
             this.FormClosing += MainForm_FormClosing;
 
-            foreach (PluginBase plugin in _plugins.Where(p=> p is PluginBase))
+            this.ContextMenuStrip = _contextMenuStripMain;
+            foreach (PluginBase plugin in _plugins.Where(p => p is PluginBase))
             {
-                this.Controls.Add(plugin);
-                plugin.ApplicationExit += Plugin_ApplicationExit;
-                plugin.ApplicationRestart += Plugin_ApplicationRestart;
-            }
-        }
+                var pluginMenu = new ToolStripMenuItem(plugin.Name);
 
-        private void Plugin_ApplicationRestart(object? sender, EventArgs e)
-        {
-            ExitApplication(true);
+                if (plugin.MenuItems != null)
+                    pluginMenu.DropDownItems.AddRange(plugin.MenuItems.ToArray());
+
+                if (pluginMenu.HasDropDownItems)
+                    _contextMenuStripMain.Items.Add(pluginMenu);
+
+                this.Controls.Add(plugin);
+
+                plugin.ContextMenuStrip = _contextMenuStripMain;
+            }
+
+            _contextMenuStripMain.Items.Add("-");
+
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart application", null,
+                (sender, e) =>
+                {
+                    ExitApplication(true);
+                }, "Restart"));
+            this.ContextMenuStrip = _contextMenuStripMain;
+
+            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Exit", null,
+                (sender, e) =>
+                {
+                    ExitApplication(false);
+                }, "Exit"));
         }
 
         private async void ExitApplication(bool restart)
@@ -239,7 +260,7 @@ namespace TopBar
 
             RegisterBar();
 
-            if(restart)
+            if (restart)
                 Application.Restart();
 
             Process.GetCurrentProcess().Kill();
@@ -255,11 +276,6 @@ namespace TopBar
             RegisterBar();
             Process.GetCurrentProcess().Kill();
 
-        }
-
-        private void Plugin_ApplicationExit(object? sender, EventArgs e)
-        {
-            ExitApplication();
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)

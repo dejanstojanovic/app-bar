@@ -4,8 +4,8 @@ namespace TopBar.Plugins
 {
     public abstract class PluginBase : Panel, IPlugin
     {
-        public abstract event EventHandler ApplicationExit;
-        public abstract event EventHandler ApplicationRestart;
+        public abstract string Name { get; }
+        public abstract IEnumerable<ToolStripMenuItem> MenuItems { get; }
 
         string _configPath = null;
         public String ConfigurationFilePath

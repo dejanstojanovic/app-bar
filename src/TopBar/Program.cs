@@ -18,14 +18,18 @@ namespace TopBar
             if (canCreateInstance)
             {
                 ApplicationConfiguration.Initialize();
-
                 var services = new ServiceCollection();
-
                 ConfigureServices(services);
-
+                
                 using (ServiceProvider serviceProvider = services.BuildServiceProvider())
                 {
                     var mainForm = serviceProvider.GetRequiredService<MainForm>();
+                    AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+                    {
+                        if (mainForm != null)
+                            mainForm.RegisterBar();
+                    };
+
                     Application.Run(mainForm);
                 }
                 mutex.ReleaseMutex();
@@ -47,13 +51,14 @@ namespace TopBar
                 IConfiguration config = configBuilder.Build();
 
             services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<ColorTheme>(new ColorTheme());
 
-            services.AddSingleton<ColorTheme>(new ColorTheme()
-            {
-                BackgroudColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.BackgroudColor)}")),
-                TextColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.TextColor)}")),
-                HoverColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.HoverColor)}"))
-            });
+            //services.AddSingleton<ColorTheme>(new ColorTheme()
+            //{
+            //    BackgroudColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.BackgroudColor)}")),
+            //    TextColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.TextColor)}")),
+            //    HoverBackgroundColor = ColorTranslator.FromHtml(config.GetValue<String>($"{nameof(ColorTheme)}:{nameof(ColorTheme.HoverBackgroundColor)}"))
+            //});
 
 
         }

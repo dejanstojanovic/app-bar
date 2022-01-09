@@ -1,0 +1,17 @@
+{
+  "ShowLabels": true,
+  "Shortcuts": [
+    {
+      "Path": "%windir%\\system32\\taskmgr.exe",
+      "Label": "Task Manager"
+    },
+    {
+      "Path": "%windir%\\system32\\notepad.exe",
+      "Label": "Notepad"
+    },
+    {
+      "Path": "%windir%\\explorer.exe",
+      "Label": "Explorer"
+    }
+  ]
+}

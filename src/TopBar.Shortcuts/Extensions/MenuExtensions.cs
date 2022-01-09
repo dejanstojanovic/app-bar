@@ -17,14 +17,6 @@ namespace TopBar.Plugins.Shortcuts.Extensions
             return null;
         }
 
-        public static bool  IsDirectory(this string path)
-        {
-            FileAttributes attr = File.GetAttributes(path);
-            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-                return true;
-
-            return false;
-
-        }
+        
     }
 }

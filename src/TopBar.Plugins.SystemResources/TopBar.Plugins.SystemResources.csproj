@@ -10,12 +10,18 @@
 
   <ItemGroup>
     <None Remove="cpu.png" />
+    <None Remove="cpu_black.png" />
+    <None Remove="cpu_white.png" />
     <None Remove="ram.png" />
+    <None Remove="ram_black.png" />
+    <None Remove="ram_white.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="cpu.png" />
-    <EmbeddedResource Include="ram.png" />
+    <EmbeddedResource Include="Icons\cpu_black.png" />
+    <EmbeddedResource Include="Icons\cpu_white.png" />
+    <EmbeddedResource Include="Icons\ram_black.png" />
+    <EmbeddedResource Include="Icons\ram_white.png" />
   </ItemGroup>
 
   <ItemGroup>
