@@ -101,7 +101,7 @@ namespace TopBar.Plugins.Shortcuts
             #region Load saved shortcuts
 
             if (_configuration?.Shortcuts != null && _configuration.Shortcuts.Any())
-                LoadShortcuts(_configuration.Shortcuts, _configuration.ShowLabels);
+                AddShortcuts(_configuration.Shortcuts, _configuration.ShowLabels);
 
             #endregion
         }
@@ -136,7 +136,7 @@ namespace TopBar.Plugins.Shortcuts
             if (files == null || !files.Any())
                 return;
 
-            LoadShortcuts(files.Select(f => f.IsDirectory() ? f : (Path.GetExtension(f).Equals(".lnk", StringComparison.InvariantCultureIgnoreCase) ? f.GetShortcutTarget() : f))
+            AddShortcuts(files.Select(f => f.IsDirectory() ? f : (Path.GetExtension(f).Equals(".lnk", StringComparison.InvariantCultureIgnoreCase) ? f.GetShortcutTarget() : f))
                 .Select(f => new ShortcutConfiguration(f)),
                 this.ShowLabels);
         }
@@ -155,7 +155,7 @@ namespace TopBar.Plugins.Shortcuts
             this.ResumeLayout();
         }
 
-        private void LoadShortcuts(IEnumerable<ShortcutConfiguration> configs, bool showLabel)
+        private void AddShortcuts(IEnumerable<ShortcutConfiguration> configs, bool showLabel)
         {
             foreach (var config in configs.Where(p =>
                                 !string.IsNullOrWhiteSpace(p.Path))
