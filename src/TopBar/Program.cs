@@ -27,7 +27,7 @@ namespace TopBar
                     AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
                     {
                         if (mainForm != null)
-                            mainForm.RegisterBar();
+                            mainForm.UnregisterBar();
                     };
 
                     Application.Run(mainForm);

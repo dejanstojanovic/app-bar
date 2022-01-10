@@ -75,8 +75,20 @@ namespace TopBar
 
         private int uCallBack;
 
-        public void RegisterBar()
+        private Screen screen;
+
+        public void UnregisterBar()
         {
+            APPBARDATA abd = new APPBARDATA();
+            abd.cbSize = Marshal.SizeOf(abd);
+            abd.hWnd = this.Handle;
+            SHAppBarMessage((int)ABMsg.ABM_REMOVE, ref abd);
+            fBarRegistered = false;
+        }
+
+        public void RegisterBar(Screen screen)
+        {
+            this.screen = screen;
             APPBARDATA abd = new APPBARDATA();
             abd.cbSize = Marshal.SizeOf(abd);
             abd.hWnd = this.Handle;
@@ -106,31 +118,47 @@ namespace TopBar
 
             if (abd.uEdge == (int)ABEdge.ABE_LEFT || abd.uEdge == (int)ABEdge.ABE_RIGHT)
             {
-                abd.rc.top = 0;
-                abd.rc.bottom = SystemInformation.PrimaryMonitorSize.Height;
+                //abd.rc.top = 0;
+                abd.rc.top = screen.Bounds.Y;
+
+                //abd.rc.bottom = SystemInformation.PrimaryMonitorSize.Height;
+                abd.rc.bottom = screen.Bounds.Height;
+
                 if (abd.uEdge == (int)ABEdge.ABE_LEFT)
                 {
-                    abd.rc.left = 0;
-                    abd.rc.right = Size.Width;
+                    //abd.rc.left = 0;
+                    abd.rc.left = screen.Bounds.X;
+                    //abd.rc.right = Size.Width;
+                    abd.rc.right = screen.Bounds.Width;
                 }
                 else
                 {
-                    abd.rc.right = SystemInformation.PrimaryMonitorSize.Width;
+                    //abd.rc.right = SystemInformation.PrimaryMonitorSize.Width;
+                    abd.rc.right = screen.Bounds.Width;
+                    
                     abd.rc.left = abd.rc.right - Size.Width;
                 }
             }
             else
             {
-                abd.rc.left = 0;
-                abd.rc.right = SystemInformation.PrimaryMonitorSize.Width;
+                //abd.rc.left = 0;
+                //abd.rc.right = SystemInformation.PrimaryMonitorSize.Width;
+
+                abd.rc.left = screen.Bounds.X;
+                abd.rc.right = (screen.Bounds.X + screen.Bounds.Width);
+
                 if (abd.uEdge == (int)ABEdge.ABE_TOP)
                 {
-                    abd.rc.top = 0;
+                    //abd.rc.top = 0;
+                    abd.rc.top = screen.Bounds.Y;
+
                     abd.rc.bottom = Size.Height;
                 }
                 else
                 {
-                    abd.rc.bottom = SystemInformation.PrimaryMonitorSize.Height;
+                    //abd.rc.bottom = SystemInformation.PrimaryMonitorSize.Height;
+                    abd.rc.bottom = screen.Bounds.Height;
+
                     abd.rc.top = abd.rc.bottom - Size.Height;
                 }
             }
@@ -216,9 +244,12 @@ namespace TopBar
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+
             this.BackColor = _colorTheme.BackgroudColor;
             //this.EnableAero();
-            this.RegisterBar();
+
+            var screens = Screen.AllScreens;
+            this.RegisterBar(screens.First());
 
             this.FormClosing += MainForm_FormClosing;
 
@@ -240,21 +271,35 @@ namespace TopBar
                 plugin.ContextMenuStrip = _contextMenuStripMain;
             }
             
-
             _contextMenuStripMain.Items.Add("-");
 
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Restart bar", null,
+            var screensMenu = new ToolStripMenuItem("Screen", null,
                 (sender, e) =>
                 {
                     ExitApplication(true);
-                }, "Restart"));
-            this.ContextMenuStrip = _contextMenuStripMain;
+                }, "Screen");
 
-            _contextMenuStripMain.Items.Add(new ToolStripMenuItem("Close bar", null,
+            //screensMenu.DropDownItems.AddRange(Screen.AllScreens.Select(s=> new ToolStripMenuItem(s.DeviceName)).ToArray());
+
+
+            _contextMenuStripMain.Items.AddRange(new ToolStripMenuItem[]{
+            screensMenu,
+            new ToolStripMenuItem("Restart bar", null,
+                (sender, e) =>
+                {
+                    ExitApplication(true);
+                }, "Restart"),
+            new ToolStripMenuItem("Close bar", null,
                 (sender, e) =>
                 {
                     ExitApplication(false);
-                }, "Exit"));
+                }, "Exit")
+            });
+            
+
+            
+
+            this.ContextMenuStrip = _contextMenuStripMain;
         }
 
         private async void ExitApplication(bool restart)
@@ -262,30 +307,27 @@ namespace TopBar
             foreach (var plugin in _plugins)
                 await plugin.SaveConfiguration();
 
-            RegisterBar();
+            UnregisterBar();
 
             if (restart)
                 Application.Restart();
 
             Process.GetCurrentProcess().Kill();
-
         }
 
         private async void ExitApplication()
         {
-
             foreach (var plugin in _plugins)
                 await plugin.SaveConfiguration();
 
-            RegisterBar();
-            Process.GetCurrentProcess().Kill();
+            UnregisterBar();
 
+            Process.GetCurrentProcess().Kill();
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
             ExitApplication(false);
-
         }
     }
 }
