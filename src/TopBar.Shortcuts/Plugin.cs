@@ -27,7 +27,7 @@ namespace TopBar.Plugins.Shortcuts
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
 
-            _configuration = LoadConfiguration(typeof(Configuration)) as Configuration;
+            _configuration = LoadConfiguration(typeof(Configuration)) as Configuration ?? new Configuration();
             if (_configuration != null)
                 ShowLabels = _configuration.ShowLabels;
 

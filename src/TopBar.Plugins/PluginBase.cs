@@ -32,9 +32,15 @@ namespace TopBar.Plugins
                 if (File.Exists(ConfigurationFilePath))
                     configurationContent = File.ReadAllText(ConfigurationFilePath);
                 else
-                    configurationContent = new StreamReader(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.{this.GetType().Namespace}.json")).ReadToEnd();
-
-                return JsonSerializer.Deserialize(configurationContent,type);
+                {
+                    var resourceStream = this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.{this.GetType().Namespace}.json");
+                    if(resourceStream != null)
+                        configurationContent = new StreamReader(resourceStream).ReadToEnd();
+                }
+                if(!string.IsNullOrWhiteSpace(configurationContent))
+                    return JsonSerializer.Deserialize(configurationContent,type);
+                else
+                    return null;
             }
             return null;
         }
