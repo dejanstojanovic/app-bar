@@ -37,7 +37,7 @@ namespace TopBar.Plugins.Shortcuts.Extensions
                 var link = new string(linkTarget);
 
                 int begin = link.IndexOf("\0\0");
-                if (begin > -1)
+                if (begin > -1 && !string.IsNullOrWhiteSpace(link))
                 {
                     int end = link.IndexOf("\\\\", begin + 2) + 2;
                     end = link.IndexOf('\0', end) + 1;
