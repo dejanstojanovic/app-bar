@@ -62,6 +62,16 @@ namespace TopBar.Plugins.Shortcuts
                         (sender, e) =>
                         {
                             ShowOptionsWinow();
+                        },"Options"),
+                new ToolStripMenuItem("Add shortcuts", null,
+                        (sender, e) =>
+                        {
+                            var dialog = new OpenFileDialog();
+                            dialog.Multiselect = true;
+                            if (dialog.ShowDialog() == DialogResult.OK)
+                            {
+                                this.AddShortcuts(dialog.FileNames.Select(f=> new ShortcutConfiguration(f)), this.ShowLabels);
+                            }
                         },"Options")
                 };
 
