@@ -14,21 +14,25 @@ namespace TopBar
         {
             get
             {
-                var startupRunKey = Registry.CurrentUser.OpenSubKey(StartupRunRegistryKey, false);
-                if (startupRunKey != null)
+                using (var startupRunKey = Registry.CurrentUser.OpenSubKey(StartupRunRegistryKey, false))
                 {
-                    var value = startupRunKey.GetValue(this.GetType().Namespace);
-                    return value != null;
+                    if (startupRunKey != null)
+                    {
+                        var value = startupRunKey.GetValue(this.GetType().Namespace);
+                        return value != null;
+                    }
+                    return false;
                 }
-                return false;
             }
             set
             {
-                var startupRunKey = Registry.CurrentUser.OpenSubKey(StartupRunRegistryKey, true);
-                if (value)
-                    startupRunKey.SetValue(this.GetType().Namespace, $"\"{Application.ExecutablePath}\"");
-                else
-                    startupRunKey.DeleteValue(this.GetType().Namespace);
+                using (var startupRunKey = Registry.CurrentUser.OpenSubKey(StartupRunRegistryKey, true))
+                {
+                    if (value)
+                        startupRunKey.SetValue(this.GetType().Namespace, $"\"{Application.ExecutablePath}\"");
+                    else
+                        startupRunKey.DeleteValue(this.GetType().Namespace);
+                }
             }
         }
     }
