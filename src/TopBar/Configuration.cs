@@ -19,7 +19,7 @@ namespace TopBar
                     if (startupRunKey != null)
                     {
                         var value = startupRunKey.GetValue(this.GetType().Namespace);
-                        return value != null;
+                        return value != null && value.ToString().Equals($"\"{Application.ExecutablePath}\"", StringComparison.InvariantCultureIgnoreCase);
                     }
                     return false;
                 }
