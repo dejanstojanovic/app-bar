@@ -1,5 +1,6 @@
 ﻿using TopBar.Plugins.Shortcuts.Extensions;
 using System.Text.Json;
+using TopBar.Plugins.Extensions;
 
 namespace TopBar.Plugins.Shortcuts
 {
@@ -26,7 +27,7 @@ namespace TopBar.Plugins.Shortcuts
             this.DragDrop += Plugin_DragDrop;
             this.DragOver += Plugin_DragOver;
 
-            _configuration = LoadConfiguration(typeof(Configuration)) as Configuration;
+            _configuration = LoadConfiguration(typeof(Configuration)) as Configuration ?? new Configuration();
             if (_configuration != null)
                 ShowLabels = _configuration.ShowLabels;
 
@@ -56,7 +57,12 @@ namespace TopBar.Plugins.Shortcuts
                         }, "ShowHide")
                     {
                         Checked = this.ShowLabels
-                    }
+                    },
+                new ToolStripMenuItem("Options", null,
+                        (sender, e) =>
+                        {
+                            ShowOptionsWinow();
+                        },"Options")
                 };
 
 
@@ -68,7 +74,7 @@ namespace TopBar.Plugins.Shortcuts
             {
                 RenderMode = ToolStripRenderMode.System
             };
-            _contextMenuStripShortcut.Items.Add(
+            _contextMenuStripShortcut.Items.AddRange(new ToolStripItem[] {
             new ToolStripMenuItem("Open", null, (sender, e) =>
             {
                 var item = sender as ToolStripMenuItem;
@@ -78,8 +84,7 @@ namespace TopBar.Plugins.Shortcuts
                     if (sourceControl != null)
                         sourceControl.OpenShortcut();
                 }
-            }, "Open"));
-            _contextMenuStripShortcut.Items.Add(
+            }, "Open"),
             new ToolStripMenuItem("Remove", null, (sender, e) =>
             {
                 var item = sender as ToolStripMenuItem;
@@ -93,7 +98,14 @@ namespace TopBar.Plugins.Shortcuts
                     }
                 }
 
-            }, "Remove"));
+            }, "Remove"),
+            new ToolStripSeparator(),
+            new ToolStripMenuItem("Options", null,
+                        (sender, e) =>
+                        {
+                            ShowOptionsWinow(this.Controls.IndexOf((sender as ToolStripMenuItem).GetSourceControl()));
+                        },"Options")
+            });
 
             _contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
             #endregion
@@ -142,6 +154,22 @@ namespace TopBar.Plugins.Shortcuts
         }
 
         #endregion
+
+        private void ShowOptionsWinow(int? index = null)
+        {
+            using (var optionsForm = index != null ?
+                new PluginOptionsForm(this.Controls.Cast<Shortcut>(), index.Value) :
+                new PluginOptionsForm(this.Controls.Cast<Shortcut>()))
+            {
+                if (optionsForm.ShowDialog() == DialogResult.OK)
+                {
+                    this.FindForm().LockWindowUpdate();
+                    this.Controls.Clear();
+                    this.AddShortcuts(optionsForm.ShortcutConfigurations, this.ShowLabels);
+                    this.FindForm().UnlockWindowUpdate();
+                }
+            }
+        }
 
         private void ReArrangeShortcuts()
         {

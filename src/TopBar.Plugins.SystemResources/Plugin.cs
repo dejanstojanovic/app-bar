@@ -20,7 +20,7 @@ namespace TopBar.Plugins.SystemResources
         {
             _colorTheme = colorTheme;
 
-            _configuration = LoadConfiguration(typeof(Configuration)) as Configuration;
+            _configuration = LoadConfiguration(typeof(Configuration)) as Configuration ?? new Configuration();
 
             _cpuUsage = new CpuUsage()
             {
