@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using TopBar.Plugins;
 using TopBar.Plugins.Extensions;
 
@@ -75,7 +77,7 @@ namespace TopBar
 
         private int uCallBack;
 
-        private Screen screen;
+        private Screen _screen;
 
         public void UnregisterBar()
         {
@@ -88,7 +90,7 @@ namespace TopBar
 
         public void RegisterBar(Screen screen)
         {
-            this.screen = screen;
+            this._screen = screen;
             APPBARDATA abd = new APPBARDATA();
             abd.cbSize = Marshal.SizeOf(abd);
             abd.hWnd = this.Handle;
@@ -119,23 +121,23 @@ namespace TopBar
             if (abd.uEdge == (int)ABEdge.ABE_LEFT || abd.uEdge == (int)ABEdge.ABE_RIGHT)
             {
                 //abd.rc.top = 0;
-                abd.rc.top = screen.Bounds.Y;
+                abd.rc.top = _screen.Bounds.Y;
 
                 //abd.rc.bottom = SystemInformation.PrimaryMonitorSize.Height;
-                abd.rc.bottom = screen.Bounds.Height;
+                abd.rc.bottom = _screen.Bounds.Height;
 
                 if (abd.uEdge == (int)ABEdge.ABE_LEFT)
                 {
                     //abd.rc.left = 0;
-                    abd.rc.left = screen.Bounds.X;
+                    abd.rc.left = _screen.Bounds.X;
                     //abd.rc.right = Size.Width;
-                    abd.rc.right = screen.Bounds.Width;
+                    abd.rc.right = _screen.Bounds.Width;
                 }
                 else
                 {
                     //abd.rc.right = SystemInformation.PrimaryMonitorSize.Width;
-                    abd.rc.right = screen.Bounds.Width;
-                    
+                    abd.rc.right = _screen.Bounds.Width;
+
                     abd.rc.left = abd.rc.right - Size.Width;
                 }
             }
@@ -144,20 +146,20 @@ namespace TopBar
                 //abd.rc.left = 0;
                 //abd.rc.right = SystemInformation.PrimaryMonitorSize.Width;
 
-                abd.rc.left = screen.Bounds.X;
-                abd.rc.right = (screen.Bounds.X + screen.Bounds.Width);
+                abd.rc.left = _screen.Bounds.X;
+                abd.rc.right = (_screen.Bounds.X + _screen.Bounds.Width);
 
                 if (abd.uEdge == (int)ABEdge.ABE_TOP)
                 {
                     //abd.rc.top = 0;
-                    abd.rc.top = screen.Bounds.Y;
+                    abd.rc.top = _screen.Bounds.Y;
 
                     abd.rc.bottom = Size.Height;
                 }
                 else
                 {
                     //abd.rc.bottom = SystemInformation.PrimaryMonitorSize.Height;
-                    abd.rc.bottom = screen.Bounds.Height;
+                    abd.rc.bottom = _screen.Bounds.Height;
 
                     abd.rc.top = abd.rc.bottom - Size.Height;
                 }
@@ -229,14 +231,16 @@ namespace TopBar
         readonly IEnumerable<IPlugin> _plugins;
         readonly ColorTheme _colorTheme;
         readonly ContextMenuStrip _contextMenuStripMain;
+        readonly Configuration _configuration;
 
-        public MainForm(IEnumerable<IPlugin> plugins, ColorTheme colorTheme)
+        public MainForm(IEnumerable<IPlugin> plugins, ColorTheme colorTheme, Configuration configuration)
         {
             _contextMenuStripMain = new ContextMenuStrip()
             {
                 RenderMode = ToolStripRenderMode.System,
             };
 
+            _configuration = configuration;
             _colorTheme = colorTheme;
             _plugins = plugins;
             InitializeComponent();
@@ -246,16 +250,20 @@ namespace TopBar
         {
 
             this.BackColor = _colorTheme.BackgroudColor;
-            //this.EnableAero();
 
-            var screens = Screen.AllScreens;
-            this.RegisterBar(screens.First());
+            var screen = Screen.AllScreens.SingleOrDefault(s => s.DeviceName.Equals(_configuration.ScreenDeviceName));
+            if (screen == null)
+            {
+                screen = Screen.AllScreens.Single(s => s.Primary);
+                _configuration.ScreenDeviceName = screen.DeviceName;
+            }
+            this.RegisterBar(screen);
 
             this.FormClosing += MainForm_FormClosing;
 
             this.ContextMenuStrip = _contextMenuStripMain;
-            
-            
+
+
             foreach (PluginBase plugin in _plugins.Where(p => p is PluginBase))
             {
                 var pluginMenu = new ToolStripMenuItem(plugin.Name);
@@ -270,17 +278,31 @@ namespace TopBar
 
                 plugin.ContextMenuStrip = _contextMenuStripMain;
             }
-            
+
             _contextMenuStripMain.Items.Add("-");
 
-            var screensMenu = new ToolStripMenuItem("Screen", null,
-                (sender, e) =>
-                {
-                    ExitApplication(true);
-                }, "Screen");
+            var screensMenu = new ToolStripMenuItem("Screen", null, null, "Screens");
 
-            //screensMenu.DropDownItems.AddRange(Screen.AllScreens.Select(s=> new ToolStripMenuItem(s.DeviceName)).ToArray());
+            screensMenu.DropDownItems.AddRange(
+                Screen.AllScreens.OrderBy(s => s.Bounds.X)
+                    .Select((screen, index) => new ToolStripMenuItem($"Screen {index + 1}{(screen.Primary ? " (primary)" : String.Empty)}", null,
+                        (sender, e) =>
+                            {
+                                this.UnregisterBar();
+                                this.RegisterBar(screen);
+                                this._configuration.ScreenDeviceName = screen.DeviceName;
+                                var item = sender as ToolStripMenuItem;
+                                if (item != null)
+                                {
+                                    foreach (var screenItem in screensMenu.DropDownItems.Cast<ToolStripMenuItem>())
+                                        screenItem.Checked = false;
 
+                                    item.Checked = true;
+                                }
+
+                            }, "Screen")
+                    { Tag = screen.DeviceName, Checked = screen.DeviceName.Equals(this._screen.DeviceName) })
+                .ToArray());
 
             _contextMenuStripMain.Items.AddRange(new ToolStripMenuItem[]{
             screensMenu,
@@ -295,9 +317,6 @@ namespace TopBar
                     ExitApplication(false);
                 }, "Exit")
             });
-            
-
-            
 
             this.ContextMenuStrip = _contextMenuStripMain;
         }
@@ -306,6 +325,9 @@ namespace TopBar
         {
             foreach (var plugin in _plugins)
                 await plugin.SaveConfiguration();
+
+            var configPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{this.GetType().Namespace}.json");
+            await File.WriteAllTextAsync(configPath, JsonSerializer.Serialize<Configuration>(_configuration));
 
             UnregisterBar();
 
