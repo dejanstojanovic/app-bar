@@ -27,7 +27,7 @@ namespace TopBar
                     AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
                     {
                         if (mainForm != null)
-                            mainForm.RegisterBar();
+                            mainForm.UnregisterBar();
                     };
 
                     Application.Run(mainForm);
@@ -47,11 +47,15 @@ namespace TopBar
 
             IConfigurationBuilder configBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                .AddJsonFile($"{typeof(Program).Namespace}.json");
                 IConfiguration config = configBuilder.Build();
 
             services.AddSingleton<IConfiguration>(config);
             services.AddSingleton<ColorTheme>(new ColorTheme());
+
+            var configuration = new Configuration();
+            config.Bind(configuration);
+            services.AddSingleton<Configuration>(configuration);
 
             //services.AddSingleton<ColorTheme>(new ColorTheme()
             //{
