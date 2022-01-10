@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using TopBar.Plugins;
-using TopBar.Plugins.Extensions;
 
 namespace TopBar
 {
@@ -248,7 +247,6 @@ namespace TopBar
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
             this.BackColor = _colorTheme.BackgroudColor;
 
             var screen = Screen.AllScreens.SingleOrDefault(s => s.DeviceName.Equals(_configuration.ScreenDeviceName));
@@ -275,14 +273,12 @@ namespace TopBar
                     _contextMenuStripMain.Items.Add(pluginMenu);
 
                 this.Controls.Add(plugin);
-
                 plugin.ContextMenuStrip = _contextMenuStripMain;
             }
 
             _contextMenuStripMain.Items.Add("-");
 
             var screensMenu = new ToolStripMenuItem("Screen", null, null, "Screens");
-
             screensMenu.DropDownItems.AddRange(
                 Screen.AllScreens.OrderBy(s => s.Bounds.X)
                     .Select((screen, index) => new ToolStripMenuItem($"Screen {index + 1}{(screen.Primary ? " (primary)" : String.Empty)}", null,
@@ -306,6 +302,16 @@ namespace TopBar
 
             _contextMenuStripMain.Items.AddRange(new ToolStripMenuItem[]{
             screensMenu,
+               new ToolStripMenuItem("Start with Windows", null,
+                (sender, e) =>
+                {
+                    var runOnStartup = _configuration.RunOnStartup;
+                    _configuration.RunOnStartup = !runOnStartup;
+                    var item = sender as ToolStripMenuItem;
+                    if(item != null)
+                        item.Checked = !runOnStartup;
+
+                }, "Startup"){ Checked = _configuration.RunOnStartup },
             new ToolStripMenuItem("Restart bar", null,
                 (sender, e) =>
                 {
