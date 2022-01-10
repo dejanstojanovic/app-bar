@@ -8,11 +8,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ProjectGuid>{330ECF4F-5DB6-4A70-B227-D03EB2AC9E6F}</ProjectGuid>
+    <ApplicationIcon>Resources\toolbar.ico</ApplicationIcon>
 
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Extensions\AcrylicExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\toolbar.ico" />
   </ItemGroup>
 
   <ItemGroup>
