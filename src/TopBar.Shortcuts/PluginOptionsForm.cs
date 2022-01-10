@@ -23,6 +23,8 @@
 
             var shortcutsList = _shortcuts.ToList();
 
+            this._listviewShorcuts.AfterLabelEdit += _listviewShorcuts_AfterLabelEdit;
+
             this._listviewShorcuts.SmallImageList = _imageList;
             this._listviewShorcuts.Items.AddRange(
                 _shortcuts.Select(s => new ListViewItem()
@@ -31,6 +33,22 @@
                     ImageIndex = shortcutsList.IndexOf(s),
                     Tag = s
                 }).ToArray());
+        }
+
+        private void _listviewShorcuts_AfterLabelEdit(object? sender, LabelEditEventArgs e)
+        {
+            if (string.IsNullOrEmpty(e.Label))
+                e.CancelEdit = true;
+            else
+            {
+                var item = _listviewShorcuts.Items[e.Item];
+                if (item != null)
+                {
+                    var shortcut = item.Tag as Shortcut;
+                    if (shortcut != null && shortcut.ShortcutConfiguration != null)
+                        shortcut.ShortcutConfiguration.Label = e.Label;
+                }
+            }
         }
 
         public PluginOptionsForm()

@@ -62,7 +62,9 @@
             this.headerText});
             this._listviewShorcuts.FullRowSelect = true;
             this._listviewShorcuts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this._listviewShorcuts.LabelEdit = true;
             this._listviewShorcuts.Location = new System.Drawing.Point(57, 12);
+            this._listviewShorcuts.MultiSelect = false;
             this._listviewShorcuts.Name = "_listviewShorcuts";
             this._listviewShorcuts.Size = new System.Drawing.Size(360, 403);
             this._listviewShorcuts.TabIndex = 4;
