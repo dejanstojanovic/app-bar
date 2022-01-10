@@ -7,6 +7,12 @@
 
         public IEnumerable<ShortcutConfiguration> ShortcutConfigurations => _shortcuts?.Select(s => s.ShortcutConfiguration);
 
+        public PluginOptionsForm(IEnumerable<Shortcut> shortcuts, int index) : this(shortcuts)
+        {
+            this._listviewShorcuts.Items[index].Selected = true;
+            this._listviewShorcuts.Select();
+        }
+
         public PluginOptionsForm(IEnumerable<Shortcut> shortcuts) : this()
         {
             buttonMoveDown.Enabled = false;
