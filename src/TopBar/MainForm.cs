@@ -231,6 +231,7 @@ namespace TopBar
         readonly ColorTheme _colorTheme;
         readonly ContextMenuStrip _contextMenuStripMain;
         readonly Configuration _configuration;
+        readonly NotifyIcon _notifyIcon;
 
         public MainForm(IEnumerable<IPlugin> plugins, ColorTheme colorTheme, Configuration configuration)
         {
@@ -242,6 +243,11 @@ namespace TopBar
             _configuration = configuration;
             _colorTheme = colorTheme;
             _plugins = plugins;
+            _notifyIcon = new NotifyIcon() 
+            { 
+                Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath),
+                Visible = true
+            };
             InitializeComponent();
         }
 
@@ -326,6 +332,8 @@ namespace TopBar
             });
 
             this.ContextMenuStrip = _contextMenuStripMain;
+
+            _notifyIcon.ContextMenuStrip = _contextMenuStripMain;
         }
 
         private async void ExitApplication(bool restart)
