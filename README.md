@@ -1,1 +1,1 @@
-# TopBar - tiny extensible top-bar for Windows
+# TopBar - tiny extensible top-bar for :window: Windows 
