@@ -9,6 +9,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ProjectGuid>{330ECF4F-5DB6-4A70-B227-D03EB2AC9E6F}</ProjectGuid>
     <ApplicationIcon>Resources\toolbar.ico</ApplicationIcon>
+    <PublisherName>dejanstojanovic.net</PublisherName>
+    <RepositoryUrl>https://github.com/dejanstojanovic/app-bar</RepositoryUrl>
+    <Authors>Dejan Stojanovic</Authors>
 
   </PropertyGroup>
 
