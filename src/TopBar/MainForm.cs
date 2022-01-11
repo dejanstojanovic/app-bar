@@ -346,21 +346,16 @@ namespace TopBar
 
             UnregisterBar();
 
+            _notifyIcon.Visible = false;
+
             if (restart)
                 Application.Restart();
+            else
+                Application.Exit();
 
             Process.GetCurrentProcess().Kill();
         }
 
-        private async void ExitApplication()
-        {
-            foreach (var plugin in _plugins)
-                await plugin.SaveConfiguration();
-
-            UnregisterBar();
-
-            Process.GetCurrentProcess().Kill();
-        }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
