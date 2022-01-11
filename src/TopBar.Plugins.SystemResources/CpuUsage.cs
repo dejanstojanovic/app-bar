@@ -58,8 +58,8 @@ namespace TopBar.Plugins.SystemResources
 
             _cpuCounter = new PerformanceCounter()
             {
-                CategoryName = "Processor",
-                CounterName = "% Processor Time",
+                CategoryName = "Processor Information",
+                CounterName = "% Processor Utility",
                 InstanceName = "_Total",
                 ReadOnly = true
             };

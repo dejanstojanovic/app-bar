@@ -231,6 +231,7 @@ namespace TopBar
         readonly ColorTheme _colorTheme;
         readonly ContextMenuStrip _contextMenuStripMain;
         readonly Configuration _configuration;
+        readonly NotifyIcon _notifyIcon;
 
         public MainForm(IEnumerable<IPlugin> plugins, ColorTheme colorTheme, Configuration configuration)
         {
@@ -242,6 +243,11 @@ namespace TopBar
             _configuration = configuration;
             _colorTheme = colorTheme;
             _plugins = plugins;
+            _notifyIcon = new NotifyIcon() 
+            { 
+                Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath),
+                Visible = true
+            };
             InitializeComponent();
         }
 
@@ -284,12 +290,13 @@ namespace TopBar
                     .Select((screen, index) => new ToolStripMenuItem($"Screen {index + 1}{(screen.Primary ? " (primary)" : String.Empty)}", null,
                         (sender, e) =>
                             {
-                                this.UnregisterBar();
-                                this.RegisterBar(screen);
-                                this._configuration.ScreenDeviceName = screen.DeviceName;
                                 var item = sender as ToolStripMenuItem;
-                                if (item != null)
+                                if (item != null && !item.Checked)
                                 {
+                                    this.UnregisterBar();
+                                    this.RegisterBar(screen);
+                                    this._configuration.ScreenDeviceName = screen.DeviceName;
+
                                     foreach (var screenItem in screensMenu.DropDownItems.Cast<ToolStripMenuItem>())
                                         screenItem.Checked = false;
 
@@ -325,6 +332,8 @@ namespace TopBar
             });
 
             this.ContextMenuStrip = _contextMenuStripMain;
+
+            _notifyIcon.ContextMenuStrip = _contextMenuStripMain;
         }
 
         private async void ExitApplication(bool restart)
@@ -337,21 +346,16 @@ namespace TopBar
 
             UnregisterBar();
 
+            _notifyIcon.Visible = false;
+
             if (restart)
                 Application.Restart();
+            else
+                Application.Exit();
 
             Process.GetCurrentProcess().Kill();
         }
 
-        private async void ExitApplication()
-        {
-            foreach (var plugin in _plugins)
-                await plugin.SaveConfiguration();
-
-            UnregisterBar();
-
-            Process.GetCurrentProcess().Kill();
-        }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {

@@ -59,6 +59,7 @@
 
         public PluginOptionsForm()
         {
+            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             InitializeComponent();
         }
 
