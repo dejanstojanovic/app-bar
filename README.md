@@ -1,1 +1,1 @@
-# app-bar
+# TopBar - tiny extensible top-bar for Windows
