@@ -28,9 +28,9 @@ namespace TopBar
             {
                 using (var startupRunKey = Registry.CurrentUser.OpenSubKey(StartupRunRegistryKey, true))
                 {
-                    if (value)
+                    if (startupRunKey!=null && value)
                         startupRunKey.SetValue(this.GetType().Namespace, $"\"{Application.ExecutablePath}\"");
-                    else if(startupRunKey.GetValue(this.GetType().Namespace)!=null)
+                    else if(startupRunKey!=null && startupRunKey.GetValue(this.GetType().Namespace)!=null)
                         startupRunKey.DeleteValue(this.GetType().Namespace);
                 }
             }
