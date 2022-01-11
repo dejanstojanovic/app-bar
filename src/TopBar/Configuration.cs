@@ -30,7 +30,7 @@ namespace TopBar
                 {
                     if (value)
                         startupRunKey.SetValue(this.GetType().Namespace, $"\"{Application.ExecutablePath}\"");
-                    else
+                    else if(startupRunKey.GetValue(this.GetType().Namespace)!=null)
                         startupRunKey.DeleteValue(this.GetType().Namespace);
                 }
             }

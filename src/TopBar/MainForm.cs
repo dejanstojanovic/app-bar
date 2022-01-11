@@ -284,12 +284,13 @@ namespace TopBar
                     .Select((screen, index) => new ToolStripMenuItem($"Screen {index + 1}{(screen.Primary ? " (primary)" : String.Empty)}", null,
                         (sender, e) =>
                             {
-                                this.UnregisterBar();
-                                this.RegisterBar(screen);
-                                this._configuration.ScreenDeviceName = screen.DeviceName;
                                 var item = sender as ToolStripMenuItem;
-                                if (item != null)
+                                if (item != null && !item.Checked)
                                 {
+                                    this.UnregisterBar();
+                                    this.RegisterBar(screen);
+                                    this._configuration.ScreenDeviceName = screen.DeviceName;
+
                                     foreach (var screenItem in screensMenu.DropDownItems.Cast<ToolStripMenuItem>())
                                         screenItem.Checked = false;
 
