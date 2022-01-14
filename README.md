@@ -7,7 +7,7 @@ That is why I started writing this tiny application. There was bunch of space so
 ![TopBar on Windows11](https://dejanstojanovic.net/media/396412/top-bar-in-action.png)
 
 ## Features
-- Shortcuts to your favorite apps/files/folders 
+- Shortcuts to your favorite apps/files/folders (by drag&drop or browse)
 - Basic system resources load % (CPU/RAM)
 - Switching monitors where the TopBar sits
 - Adapting colors to current Windows theme (requires app restart after theme change)
