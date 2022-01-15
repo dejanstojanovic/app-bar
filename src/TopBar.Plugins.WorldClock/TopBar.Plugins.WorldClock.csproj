@@ -9,11 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Icons\time_white.png" />
+    <None Remove="Icons\calendar_black.png" />
+    <None Remove="Icons\calendar_white.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Icons\time_white.png" />
+    <EmbeddedResource Include="Icons\calendar_black.png" />
+    <EmbeddedResource Include="Icons\calendar_white.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -17,49 +17,46 @@ namespace TopBar.Plugins.WorldClock
         readonly ClockConfiguration _configuration;
         readonly Forms.Timer _timer;
 
+        private string GetText()
+        {
+            return DateTime.Now.ToString($"Dubai, { CultureInfo.CurrentUICulture.DateTimeFormat.ShortTimePattern} {CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern}");
+        }
         public DateTimeControl(ColorTheme colorTheme, ClockConfiguration configuration) : base()
         {
             _configuration = configuration;
             _colorTheme = colorTheme;
 
-            this.BackColor = Color.Blue;
-
             _label = new Label()
             {
-                BackColor = Color.Red,
-                Height = 28,
-                Width = 100,
-
-                //ForeColor = _colorTheme.TextColor,
-                ForeColor = Color.White,
+                //BackColor = Color.Red,
+                ForeColor = _colorTheme.TextColor,
                 Dock = DockStyle.Right,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Padding = new Padding(0, 0, 0, 0),
-                //Text = DateTime.Now.ToString($"Dubai, { CultureInfo.CurrentUICulture.DateTimeFormat.ShortTimePattern} {CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern}")
-                //Text ="Test"
+                Text = GetText(),
             };
             this.Controls.Add(_label);
-
-            
 
             var iconColor = _colorTheme.TextColor.R == 0 && _colorTheme.TextColor.G == 0 && _colorTheme.TextColor.B == 0 ?
                            nameof(Color.Black).ToLower() :
                            nameof(Color.White).ToLower();
+
             _pictureBox = new PictureBox()
             {
-                Width = 16,
-                Padding= new Padding(4,0,4,0),
-                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.Icons.time_{iconColor}.png")),
+                //BackColor = Color.Orange,
+
+                Width = 20,
+                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.Icons.calendar_{iconColor}.png")),
                 SizeMode = PictureBoxSizeMode.CenterImage,
-                Dock = DockStyle.Left
-            };
+                Dock = DockStyle.Left,
+        };
+
             this.Controls.Add(_pictureBox);
+            _pictureBox.BringToFront();
 
-
-            _label.Text = "BBBB";
             this.ResizeControl();
 
-            _timer = new Forms.Timer() 
+            _timer = new Forms.Timer()
             {
                 Interval = 1000
             };
@@ -70,13 +67,15 @@ namespace TopBar.Plugins.WorldClock
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            _label.Text = DateTime.Now.ToString();
+            _label.Text = GetText();
+            ResizeControl();
         }
 
         private void ResizeControl()
         {
-            _label.Width = _label.MeasureDisplayStringWidth() + 48;
-            this.Width = _pictureBox.Width + _label.Width;
+            _label.Width = _label.MeasureDisplayStringWidth();
+            this.Width = _pictureBox.Width + _pictureBox.Padding.Left + _pictureBox.Padding.Right + _label.Width;
+
         }
     }
 }
