@@ -2,6 +2,7 @@
 using TopBar.Plugins.Shortcuts.Extensions;
 using System.Linq;
 using TopBar.Plugins.Shortcuts.Interop;
+using TopBar.Plugins.Extensions;
 
 namespace TopBar.Plugins.Shortcuts
 {
@@ -163,7 +164,7 @@ namespace TopBar.Plugins.Shortcuts
             {
                 SizeF labelSize = _label.CreateGraphics().MeasureString(_label.Text, _label.Font);
 
-                width = width + MeasureDisplayStringWidth(_label.CreateGraphics(), _label.Text, _label.Font);
+                width = width + _label.MeasureDisplayStringWidth();
                 _label.Top = 1 + (_pictureBox.Height - (int)labelSize.Height) / 2;
                 width = width + _pictureBox.Padding.Left;
             }
@@ -175,23 +176,6 @@ namespace TopBar.Plugins.Shortcuts
         {
             _label.Visible = !_label.Visible;
             SetSizes();
-        }
-
-        public static int MeasureDisplayStringWidth(Graphics graphics, string text, Font font)
-        {
-            StringFormat format = new StringFormat();
-            RectangleF rect = new System.Drawing.RectangleF(0, 0, 1000, 1000);
-            CharacterRange[] ranges = {
-                new CharacterRange(0, text.Length)
-            };
-            Region[] regions = new Region[1];
-
-            format.SetMeasurableCharacterRanges(ranges);
-
-            regions = graphics.MeasureCharacterRanges(text, font, rect, format);
-            rect = regions[0].GetBounds(graphics);
-
-            return (int)(rect.Right + 1.0f);
         }
 
         private void _label_TextChanged(object? sender, EventArgs e)
