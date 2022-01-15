@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TopBar.Plugins.Extensions;
 
 namespace TopBar.Plugins.WorldClock
 {
@@ -38,17 +39,28 @@ namespace TopBar.Plugins.WorldClock
                 new ToolStripMenuItem("Settings...", null,
                 (sender, e) =>
                     {
-                         var dialog = new OpenFileDialog();
-                            dialog.Multiselect = true;
-                            if (dialog.ShowDialog() == DialogResult.OK)
-                            {
-                                
-                            }
+                         ShowOptionsWinow();
                     },"Settings")
                 };
 
 
 
+        }
+
+        private void ShowOptionsWinow(int? index = null)
+        {
+            using (var optionsForm = index != null ?
+                new PluginOptionsForm() :
+                new PluginOptionsForm())
+            {
+                if (optionsForm.ShowDialog() == DialogResult.OK)
+                {
+                    this.FindForm().LockWindowUpdate();
+                    //this.Controls.Clear();
+
+                    this.FindForm().UnlockWindowUpdate();
+                }
+            }
         }
 
         public override async Task SaveConfiguration()

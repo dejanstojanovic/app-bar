@@ -16,5 +16,22 @@ namespace TopBar.Plugins.WorldClock
         {
             InitializeComponent();
         }
+
+        private void PluginOptionsForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+            Close();
+        }
     }
 }
