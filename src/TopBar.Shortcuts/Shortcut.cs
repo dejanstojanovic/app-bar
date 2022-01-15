@@ -27,10 +27,10 @@ namespace TopBar.Plugins.Shortcuts
         }
         public Image Icon { get => _pictureBox.Image; set => _pictureBox.Image = value; }
 
-        public Shortcut(ShortcutConfiguration config)
+        public Shortcut(ShortcutConfiguration config, ColorTheme colorTheme)
         {
             _shortcutConfiguration = config;
-            _colorTheme = new ColorTheme();
+            _colorTheme = colorTheme;
 
             this.Radius = 3;
             this.Thickness = 0;

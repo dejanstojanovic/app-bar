@@ -18,9 +18,9 @@ namespace TopBar.Plugins.Shortcuts
 
         public override string Name => "Shortcuts";
 
-        public Plugin() : base()
+        public Plugin(ColorTheme colorTheme) : base()
         {
-            _colorTheme = new ColorTheme();
+            _colorTheme = colorTheme;
 
             this.Dock = DockStyle.Fill;
             this.AllowDrop = true;
@@ -58,12 +58,7 @@ namespace TopBar.Plugins.Shortcuts
                     {
                         Checked = this.ShowLabels
                     },
-                new ToolStripMenuItem("Options", null,
-                        (sender, e) =>
-                        {
-                            ShowOptionsWinow();
-                        },"Options"),
-                new ToolStripMenuItem("Add shortcuts", null,
+                new ToolStripMenuItem("Add shortcuts...", null,
                         (sender, e) =>
                         {
                             var dialog = new OpenFileDialog();
@@ -72,7 +67,12 @@ namespace TopBar.Plugins.Shortcuts
                             {
                                 this.AddShortcuts(dialog.FileNames.Select(f=> new ShortcutConfiguration(f)), this.ShowLabels);
                             }
-                        },"Options")
+                        },"AddShortcuts"),
+                                new ToolStripMenuItem("Options...", null,
+                        (sender, e) =>
+                        {
+                            ShowOptionsWinow();
+                        },"Options"),
                 };
 
 
@@ -110,11 +110,11 @@ namespace TopBar.Plugins.Shortcuts
 
             }, "Remove"),
             new ToolStripSeparator(),
-            new ToolStripMenuItem("Options", null,
+            new ToolStripMenuItem("Options...", null,
                         (sender, e) =>
                         {
                             ShowOptionsWinow(this.Controls.IndexOf((sender as ToolStripMenuItem).GetSourceControl()));
-                        },"Options")
+                        },"ShortcutOptions")
             });
 
             _contextMenuStripShortcut.Closing += ContextMenuStripShortcut_Closing;
@@ -202,7 +202,7 @@ namespace TopBar.Plugins.Shortcuts
                                 )
             {
                 config.Path = Environment.ExpandEnvironmentVariables(config.Path);
-                var shortcut = new Shortcut(config);
+                var shortcut = new Shortcut(config, _colorTheme);
 
                 if (showLabel)
                     shortcut.ShowLabel();
