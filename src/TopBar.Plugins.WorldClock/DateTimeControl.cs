@@ -17,9 +17,12 @@ namespace TopBar.Plugins.WorldClock
         readonly ClockConfiguration _configuration;
         readonly Forms.Timer _timer;
 
+        public ClockConfiguration Configuration { get => _configuration; }
+
         private string GetText()
         {
-            return DateTime.Now.ToString($"Dubai, { CultureInfo.CurrentUICulture.DateTimeFormat.ShortTimePattern} {CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern}");
+            DateTime zoneTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _configuration.TimeZone);
+            return zoneTime.ToString($"{_configuration.Title}, { CultureInfo.CurrentUICulture.DateTimeFormat.ShortTimePattern} {CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern}");
         }
         public DateTimeControl(ColorTheme colorTheme, ClockConfiguration configuration) : base()
         {

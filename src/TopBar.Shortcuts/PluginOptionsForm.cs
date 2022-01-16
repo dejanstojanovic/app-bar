@@ -4,6 +4,7 @@
     {
         IEnumerable<Shortcut> _shortcuts;
         readonly ImageList _imageList;
+        readonly ContextMenuStrip _contextMenuStripShortcut;
 
         public IEnumerable<ShortcutConfiguration> ShortcutConfigurations => _shortcuts?.Select(s => s.ShortcutConfiguration);
 
@@ -19,6 +20,8 @@
             buttonMoveUp.Enabled = false;
 
             _shortcuts = shortcuts;
+
+            _contextMenuStripShortcut = new ContextMenuStrip();
 
             _imageList = new ImageList()
             {

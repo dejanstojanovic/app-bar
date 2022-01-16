@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using TopBar.Plugins.Shortcuts.Extensions;
-using System.Linq;
 using TopBar.Plugins.Shortcuts.Interop;
 using TopBar.Plugins.Extensions;
 

@@ -23,8 +23,7 @@ namespace TopBar.Plugins.WorldClock
 
             _dateTimeControl = new DateTimeControl(_colorTheme, new ClockConfiguration()
             {
-                Active = true,
-                TimeZoneId = "Dubai GMT+04",
+                TimeZoneId = "Arabian Standard Time",
                 Title = "UAE"
             })
             { Dock = DockStyle.Right };
@@ -47,11 +46,16 @@ namespace TopBar.Plugins.WorldClock
 
         }
 
-        private void ShowOptionsWinow(int? index = null)
+        private void ShowOptionsWinow()
         {
-            using (var optionsForm = index != null ?
-                new PluginOptionsForm() :
-                new PluginOptionsForm())
+            using (var optionsForm = new PluginOptionsForm(new Configuration()
+            {
+                DatesAndTimes = this.Controls.Cast<DateTimeControl>().Select(c => new ClockConfiguration()
+                {
+                    Title = c.Configuration.Title,
+                    TimeZoneId = c.Configuration.TimeZoneId
+                }).ToArray()
+            }))
             {
                 if (optionsForm.ShowDialog() == DialogResult.OK)
                 {

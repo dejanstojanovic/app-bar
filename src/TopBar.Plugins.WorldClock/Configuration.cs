@@ -8,13 +8,14 @@ namespace TopBar.Plugins.WorldClock
 {
     public class Configuration
     {
-        IEnumerable<ClockConfiguration> Clocks { get;}
+        public IEnumerable<ClockConfiguration> DatesAndTimes { get; set; }
     }
 
     public class ClockConfiguration
     {
         public string Title { get; set; }
         public string TimeZoneId { get; set; }
-        public bool Active { get; set; }
+
+        public TimeZoneInfo TimeZone { get => TimeZoneInfo.GetSystemTimeZones().SingleOrDefault(z => z.Id.Equals(TimeZoneId, StringComparison.InvariantCultureIgnoreCase)); }
     }
 }
