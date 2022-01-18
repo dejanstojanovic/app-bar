@@ -35,13 +35,19 @@
             this._listviewShorcuts.AfterLabelEdit += _listviewShorcuts_AfterLabelEdit;
 
             this._listviewShorcuts.SmallImageList = _imageList;
-            this._listviewShorcuts.Items.AddRange(
-                _shortcuts.Select(s => new ListViewItem()
+
+            this._listviewShorcuts.Items.AddRange(_shortcuts.Select(s =>
+            {
+                var item = new ListViewItem()
                 {
                     Text = s.ShortcutConfiguration.Label,
                     ImageIndex = shortcutsList.IndexOf(s),
                     Tag = s
-                }).ToArray());
+                };
+                item.SubItems.Add(s.ShortcutConfiguration.Path);
+                return item;
+            }).ToArray());
+
         }
 
         private void _listviewShorcuts_AfterLabelEdit(object? sender, LabelEditEventArgs e)

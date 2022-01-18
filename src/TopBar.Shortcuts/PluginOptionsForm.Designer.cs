@@ -34,11 +34,13 @@
             this.headerText = new System.Windows.Forms.ColumnHeader();
             this.buttonMoveUp = new System.Windows.Forms.Button();
             this.buttonMoveDown = new System.Windows.Forms.Button();
+            this.headerPath = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(342, 421);
+            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCancel.Location = new System.Drawing.Point(648, 421);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
@@ -48,7 +50,8 @@
             // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(261, 421);
+            this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSave.Location = new System.Drawing.Point(567, 421);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 3;
@@ -58,15 +61,18 @@
             // 
             // _listviewShorcuts
             // 
+            this._listviewShorcuts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._listviewShorcuts.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.headerText});
+            this.headerText,
+            this.headerPath});
             this._listviewShorcuts.FullRowSelect = true;
-            this._listviewShorcuts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this._listviewShorcuts.LabelEdit = true;
             this._listviewShorcuts.Location = new System.Drawing.Point(57, 12);
             this._listviewShorcuts.MultiSelect = false;
             this._listviewShorcuts.Name = "_listviewShorcuts";
-            this._listviewShorcuts.Size = new System.Drawing.Size(360, 403);
+            this._listviewShorcuts.Size = new System.Drawing.Size(666, 403);
             this._listviewShorcuts.TabIndex = 4;
             this._listviewShorcuts.UseCompatibleStateImageBehavior = false;
             this._listviewShorcuts.View = System.Windows.Forms.View.Details;
@@ -74,8 +80,8 @@
             // 
             // headerText
             // 
-            this.headerText.Text = "";
-            this.headerText.Width = 350;
+            this.headerText.Text = "Text";
+            this.headerText.Width = 300;
             // 
             // buttonMoveUp
             // 
@@ -97,13 +103,18 @@
             this.buttonMoveDown.UseVisualStyleBackColor = true;
             this.buttonMoveDown.Click += new System.EventHandler(this.buttonMoveDown_Click);
             // 
+            // headerPath
+            // 
+            this.headerPath.Text = "Path";
+            this.headerPath.Width = 320;
+            // 
             // PluginOptionsForm
             // 
             this.AcceptButton = this.buttonSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(429, 451);
+            this.ClientSize = new System.Drawing.Size(735, 451);
             this.Controls.Add(this.buttonMoveDown);
             this.Controls.Add(this.buttonMoveUp);
             this.Controls.Add(this._listviewShorcuts);
@@ -127,5 +138,6 @@
         private Button buttonMoveUp;
         private Button buttonMoveDown;
         private ColumnHeader headerText;
+        private ColumnHeader headerPath;
     }
 }
