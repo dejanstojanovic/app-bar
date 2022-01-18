@@ -1,4 +1,6 @@
-﻿namespace TopBar.Plugins.Shortcuts
+﻿using TopBar.Plugins.Shortcuts.Extensions;
+
+namespace TopBar.Plugins.Shortcuts
 {
     internal partial class PluginOptionsForm : Form
     {
@@ -31,9 +33,31 @@
                 var item = sender as ToolStripMenuItem;
                 if (item != null)
                 {
-
+                     var sourceControl = item.GetSourceControl() as ListView;
+                    if (sourceControl != null)
+                    {
+                        var listItem =sourceControl.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
+                        if(listItem != null)
+                            listItem.BeginEdit();
+                    }
                 }
-            }, "Edit") });
+            }, "Edit"),
+            new ToolStripMenuItem("Remove shortcut", null, (sender, e) =>
+            {
+                var item = sender as ToolStripMenuItem;
+                if (item != null)
+                {
+                    var sourceControl = item.GetSourceControl() as ListView;
+                    if (sourceControl != null)
+                    {
+                        var listItem = sourceControl.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
+                        if (listItem != null)
+                            sourceControl.Items.Remove(listItem);
+                    }
+                }
+            }, "Remove") });
+            _listviewShorcuts.ContextMenuStrip = _contextMenuStripShortcut;
+
 
             _imageList = new ImageList()
             {

@@ -32,9 +32,9 @@
             this.buttonSave = new System.Windows.Forms.Button();
             this._listviewShorcuts = new System.Windows.Forms.ListView();
             this.headerText = new System.Windows.Forms.ColumnHeader();
+            this.headerPath = new System.Windows.Forms.ColumnHeader();
             this.buttonMoveUp = new System.Windows.Forms.Button();
             this.buttonMoveDown = new System.Windows.Forms.Button();
-            this.headerPath = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // buttonCancel
@@ -68,6 +68,7 @@
             this.headerText,
             this.headerPath});
             this._listviewShorcuts.FullRowSelect = true;
+            this._listviewShorcuts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this._listviewShorcuts.LabelEdit = true;
             this._listviewShorcuts.Location = new System.Drawing.Point(57, 12);
             this._listviewShorcuts.MultiSelect = false;
@@ -82,6 +83,11 @@
             // 
             this.headerText.Text = "Text";
             this.headerText.Width = 300;
+            // 
+            // headerPath
+            // 
+            this.headerPath.Text = "Path";
+            this.headerPath.Width = 320;
             // 
             // buttonMoveUp
             // 
@@ -102,11 +108,6 @@
             this.buttonMoveDown.TabIndex = 6;
             this.buttonMoveDown.UseVisualStyleBackColor = true;
             this.buttonMoveDown.Click += new System.EventHandler(this.buttonMoveDown_Click);
-            // 
-            // headerPath
-            // 
-            this.headerPath.Text = "Path";
-            this.headerPath.Width = 320;
             // 
             // PluginOptionsForm
             // 
