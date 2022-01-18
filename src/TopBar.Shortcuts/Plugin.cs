@@ -17,6 +17,7 @@ namespace TopBar.Plugins.Shortcuts
         public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
 
         public override string Name => "Shortcuts";
+        public override int Order => 0;
 
         public Plugin(ColorTheme colorTheme) : base()
         {

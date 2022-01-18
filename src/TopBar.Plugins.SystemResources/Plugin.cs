@@ -15,6 +15,7 @@ namespace TopBar.Plugins.SystemResources
         public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
 
         public override string Name => "System resources";
+        public override int Order => 2;
 
         public Plugin(ColorTheme colorTheme) : base()
         {

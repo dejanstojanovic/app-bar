@@ -6,6 +6,7 @@ namespace TopBar.Plugins
     public abstract class PluginBase : Panel, IPlugin
     {
         public abstract string Name { get; }
+        public abstract int Order { get; }
         public abstract IEnumerable<ToolStripMenuItem> MenuItems { get; }
 
         string _configPath = null;

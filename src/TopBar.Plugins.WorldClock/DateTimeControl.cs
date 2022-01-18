@@ -13,7 +13,7 @@ namespace TopBar.Plugins.WorldClock
     {
         readonly ColorTheme _colorTheme;
         readonly Label _label;
-        readonly PictureBox _pictureBox;
+        //readonly PictureBox _pictureBox;
         readonly ClockConfiguration _configuration;
         readonly Forms.Timer _timer;
 
@@ -22,7 +22,8 @@ namespace TopBar.Plugins.WorldClock
         private string GetText()
         {
             DateTime zoneTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _configuration.TimeZone);
-            return zoneTime.ToString($"{_configuration.Title}, { CultureInfo.CurrentUICulture.DateTimeFormat.ShortTimePattern} {CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern}");
+            string zoneTimeText = zoneTime.ToString($"{ CultureInfo.CurrentUICulture.DateTimeFormat.ShortTimePattern} {CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern}");
+            return $"{_configuration.Title}, {zoneTimeText}";
         }
         public DateTimeControl(ColorTheme colorTheme, ClockConfiguration configuration) : base()
         {
@@ -44,18 +45,18 @@ namespace TopBar.Plugins.WorldClock
                            nameof(Color.Black).ToLower() :
                            nameof(Color.White).ToLower();
 
-            _pictureBox = new PictureBox()
-            {
-                //BackColor = Color.Orange,
+            //_pictureBox = new PictureBox()
+            //{
+            //    //BackColor = Color.Orange,
 
-                Width = 20,
-                Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.Icons.calendar_{iconColor}.png")),
-                SizeMode = PictureBoxSizeMode.CenterImage,
-                Dock = DockStyle.Left,
-        };
+            //    Width = 20,
+            //    Image = Bitmap.FromStream(this.GetType().Assembly.GetManifestResourceStream($"{this.GetType().Namespace}.Icons.calendar_{iconColor}.png")),
+            //    SizeMode = PictureBoxSizeMode.CenterImage,
+            //    Dock = DockStyle.Left,
+            //};
 
-            this.Controls.Add(_pictureBox);
-            _pictureBox.BringToFront();
+            //this.Controls.Add(_pictureBox);
+            //_pictureBox.BringToFront();
 
             this.ResizeControl();
 
@@ -77,7 +78,8 @@ namespace TopBar.Plugins.WorldClock
         private void ResizeControl()
         {
             _label.Width = _label.MeasureDisplayStringWidth();
-            this.Width = _pictureBox.Width + _pictureBox.Padding.Left + _pictureBox.Padding.Right + _label.Width;
+            //this.Width = _pictureBox.Width + _pictureBox.Padding.Left + _pictureBox.Padding.Right + _label.Width;
+            this.Width= _label.Width;
 
         }
     }
