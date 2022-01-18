@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TopBar.Plugins.Shortcuts.Extensions
+namespace TopBar.Plugins.Extensions
 {
     public static class MenuExtensions
     {
-        public static Control GetContextControl(this ToolStripMenuItem menuItem)
+        public static Control GetSourceControl(this ToolStripMenuItem menuItem)
         {
             var menu = menuItem.Owner as ContextMenuStrip;
             if (menu != null)

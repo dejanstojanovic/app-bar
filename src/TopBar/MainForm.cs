@@ -243,8 +243,8 @@ namespace TopBar
             _configuration = configuration;
             _colorTheme = colorTheme;
             _plugins = plugins;
-            _notifyIcon = new NotifyIcon() 
-            { 
+            _notifyIcon = new NotifyIcon()
+            {
                 Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath),
                 Visible = true
             };
@@ -268,7 +268,7 @@ namespace TopBar
             this.ContextMenuStrip = _contextMenuStripMain;
 
 
-            foreach (PluginBase plugin in _plugins.Where(p => p is PluginBase))
+            foreach (PluginBase plugin in _plugins.Where(p => p is PluginBase).OrderBy(p => p.Order))
             {
                 var pluginMenu = new ToolStripMenuItem(plugin.Name);
 

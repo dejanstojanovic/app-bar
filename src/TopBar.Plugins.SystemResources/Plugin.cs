@@ -15,6 +15,7 @@ namespace TopBar.Plugins.SystemResources
         public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
 
         public override string Name => "System resources";
+        public override int Order => 2;
 
         public Plugin(ColorTheme colorTheme) : base()
         {
@@ -81,7 +82,7 @@ namespace TopBar.Plugins.SystemResources
                         if(item != null)
                             item.Checked = _configuration.ShowRAM;
                     },"Ram"){Checked = _configuration.ShowRAM},
-            new ToolStripMenuItem("Open Resource Monitor", null,
+            new ToolStripMenuItem("Open Resource Monitor...", null,
                 (sender, e) =>
                     {
                         var windowsFolder = Environment.GetEnvironmentVariable("windir");
@@ -92,7 +93,7 @@ namespace TopBar.Plugins.SystemResources
                         p.StartInfo.UseShellExecute = true;
                         p.Start();
                     }, "ResourceMonitor"),
-            new ToolStripMenuItem("Open Task Manager", null,
+            new ToolStripMenuItem("Open Task Manager...", null,
                 (sender, e) =>
                     {
                         Process p = new Process();

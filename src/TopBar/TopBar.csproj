@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TopBar.Plugins.SystemResources\TopBar.Plugins.SystemResources.csproj" />
+    <ProjectReference Include="..\TopBar.Plugins.TimeZones\TopBar.Plugins.TimeZones.csproj" />
     <ProjectReference Include="..\TopBar.Plugins\TopBar.Plugins.csproj" />
     <ProjectReference Include="..\TopBar.Shortcuts\TopBar.Plugins.Shortcuts.csproj" />
   </ItemGroup>

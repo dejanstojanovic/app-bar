@@ -1,9 +1,12 @@
-﻿namespace TopBar.Plugins.Shortcuts
+﻿using TopBar.Plugins.Shortcuts.Extensions;
+
+namespace TopBar.Plugins.Shortcuts
 {
     internal partial class PluginOptionsForm : Form
     {
         IEnumerable<Shortcut> _shortcuts;
         readonly ImageList _imageList;
+        readonly ContextMenuStrip _contextMenuStripShortcut;
 
         public IEnumerable<ShortcutConfiguration> ShortcutConfigurations => _shortcuts?.Select(s => s.ShortcutConfiguration);
 
@@ -20,6 +23,43 @@
 
             _shortcuts = shortcuts;
 
+            _contextMenuStripShortcut = new ContextMenuStrip()
+            {
+                RenderMode = ToolStripRenderMode.System
+            };
+            _contextMenuStripShortcut.VisibleChanged += _contextMenuStripShortcut_VisibleChanged;
+
+            _contextMenuStripShortcut.Items.AddRange(new ToolStripItem[] {
+            new ToolStripMenuItem("Edit label", null, (sender, e) =>
+            {
+                var item = sender as ToolStripMenuItem;
+                if (item != null)
+                {
+                     var sourceControl = item.GetContextControl() as ListView;
+                    if (sourceControl != null)
+                    {
+                        var listItem =sourceControl.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
+                        if(listItem != null)
+                            listItem.BeginEdit();
+                    }
+                }
+            }, "Edit"),
+            new ToolStripMenuItem("Remove shortcut", null, (sender, e) =>
+            {
+                var item = sender as ToolStripMenuItem;
+                if (item != null)
+                {
+                    var sourceControl = item.GetContextControl() as ListView;
+                    if (sourceControl != null)
+                    {
+                        var listItem = sourceControl.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
+                        if (listItem != null)
+                            sourceControl.Items.Remove(listItem);
+                    }
+                }
+            }, "Remove") });
+            _listviewShorcuts.ContextMenuStrip = _contextMenuStripShortcut;
+
             _imageList = new ImageList()
             {
                 ColorDepth = ColorDepth.Depth32Bit,
@@ -32,13 +72,27 @@
             this._listviewShorcuts.AfterLabelEdit += _listviewShorcuts_AfterLabelEdit;
 
             this._listviewShorcuts.SmallImageList = _imageList;
-            this._listviewShorcuts.Items.AddRange(
-                _shortcuts.Select(s => new ListViewItem()
+
+            this._listviewShorcuts.Items.AddRange(_shortcuts.Select(s =>
+            {
+                var item = new ListViewItem()
                 {
                     Text = s.ShortcutConfiguration.Label,
                     ImageIndex = shortcutsList.IndexOf(s),
                     Tag = s
-                }).ToArray());
+                };
+                item.SubItems.Add(s.ShortcutConfiguration.Path);
+                return item;
+            }).ToArray());
+
+        }
+
+        private void _contextMenuStripShortcut_VisibleChanged(object? sender, EventArgs e)
+        {
+            if(this._listviewShorcuts.SelectedItems.Count == 0)
+                this._contextMenuStripShortcut.Enabled = false;
+            else
+                this._contextMenuStripShortcut.Enabled = true;
         }
 
         private void _listviewShorcuts_AfterLabelEdit(object? sender, LabelEditEventArgs e)

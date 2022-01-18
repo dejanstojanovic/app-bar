@@ -44,6 +44,7 @@ namespace TopBar
             
             services.AddScoped<IPlugin, Plugins.Shortcuts.Plugin>();
             services.AddScoped<IPlugin, Plugins.SystemResources.Plugin>();
+            services.AddScoped<IPlugin, Plugins.TimeZones.Plugin>();
 
             IConfigurationBuilder configBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
