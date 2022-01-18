@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TopBar.Plugins.Extensions;
 using static System.Windows.Forms.ListViewItem;
 
 namespace TopBar.Plugins.WorldClock
@@ -15,7 +16,7 @@ namespace TopBar.Plugins.WorldClock
     {
         readonly ComboBox _timeZonesList;
         readonly Configuration _configuration;
-
+        readonly ContextMenuStrip _contextMenuTimezones;
         public PluginOptionsForm(Configuration configuration)
         {
             _configuration = configuration;
@@ -30,7 +31,44 @@ namespace TopBar.Plugins.WorldClock
 
             InitializeComponent();
 
-            this._listviewShorcuts.MouseDoubleClick += _listviewShorcuts_MouseDoubleClick;
+
+            _contextMenuTimezones = new ContextMenuStrip()
+            {
+                RenderMode = ToolStripRenderMode.System
+            };
+            _contextMenuTimezones.Items.AddRange(new ToolStripItem[] {
+                new ToolStripMenuItem("Edit label", null, (sender, e) =>
+                {
+                    var item = sender as ToolStripMenuItem;
+                    if (item != null)
+                    {
+                         var sourceControl = item.GetSourceControl() as ListView;
+                        if (sourceControl != null)
+                        {
+                            var listItem =sourceControl.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
+                            if(listItem != null)
+                                listItem.BeginEdit();
+                        }
+                    }
+                }, "EditLabel"),
+                new ToolStripMenuItem("Edit timezone", null, (sender, e) =>
+                {
+                    var item = sender as ToolStripMenuItem;
+                    if (item != null)
+                    {
+                         var sourceControl = item.GetSourceControl() as ListView;
+                        if (sourceControl != null)
+                        {
+                            var listItem =sourceControl.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
+                            if(listItem != null)
+                                BeginEditTimezone(listItem);
+                        }
+                    }
+                }, "EditTimezone")
+            });
+            _listviewTimezones.ContextMenuStrip = _contextMenuTimezones;
+
+            this._listviewTimezones.MouseDoubleClick += _listviewShorcuts_MouseDoubleClick;
             this._timeZonesList.LostFocus += _timeZonesList_LostFocus;
         }
 
@@ -39,7 +77,7 @@ namespace TopBar.Plugins.WorldClock
             if (_timeZonesList.Visible)
             {
                 //TODO: Do the thing
-                var selectedItem = _listviewShorcuts.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
+                var selectedItem = _listviewTimezones.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
                 if (selectedItem != null)
                 {
                     selectedItem.SubItems[1].Text = (_timeZonesList.SelectedItem as TimeZoneInfo)?.DisplayName;
@@ -56,7 +94,7 @@ namespace TopBar.Plugins.WorldClock
             //https://www.codeproject.com/Articles/316204/ListView-in-line-editing
 
 
-            var currentItem = _listviewShorcuts.GetItemAt(e.X, e.Y);
+            var currentItem = _listviewTimezones.GetItemAt(e.X, e.Y);
             if (currentItem == null)
                 return;
 
@@ -71,13 +109,22 @@ namespace TopBar.Plugins.WorldClock
             if (currentSubItem.Name.Equals(nameof(ClockConfiguration.TimeZoneId)))
             {
                 _timeZonesList.SelectedItem = _timeZonesList.Items.Cast<TimeZoneInfo>().SingleOrDefault(z => z.Id == (currentItem.Tag as TimeZoneInfo)?.Id);
-                _timeZonesList.SetBounds(lLeft + _listviewShorcuts.Left, currentSubItem.Bounds.Top + _listviewShorcuts.Top, lWidth, currentSubItem.Bounds.Height);
+                _timeZonesList.SetBounds(lLeft + _listviewTimezones.Left, currentSubItem.Bounds.Top + _listviewTimezones.Top, lWidth, currentSubItem.Bounds.Height);
                 _timeZonesList.Show();
                 _timeZonesList.Focus();
             }
         }
 
+        private void BeginEditTimezone(ListViewItem item)
+        {
+            var subItem = item.SubItems[1];
+            var lLeft = subItem.Bounds.Left + 2;
+            var lWidth = subItem.Bounds.Width;
 
+            _timeZonesList.SetBounds(lLeft + _listviewTimezones.Left, subItem.Bounds.Top + _listviewTimezones.Top, lWidth, subItem.Bounds.Height);
+            _timeZonesList.Show();
+            _timeZonesList.Focus();
+        }
 
         private void PluginOptionsForm_Load(object sender, EventArgs e)
         {
@@ -91,7 +138,7 @@ namespace TopBar.Plugins.WorldClock
                 item.SubItems.Add(new ListViewSubItem(item, time.TimeZone.DisplayName) { 
                     Name = nameof(ClockConfiguration.TimeZoneId),
                 });
-                this._listviewShorcuts.Items.Add(item);
+                this._listviewTimezones.Items.Add(item);
             }
         }
 

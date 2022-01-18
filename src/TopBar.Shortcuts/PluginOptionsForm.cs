@@ -33,7 +33,7 @@ namespace TopBar.Plugins.Shortcuts
                 var item = sender as ToolStripMenuItem;
                 if (item != null)
                 {
-                     var sourceControl = item.GetSourceControl() as ListView;
+                     var sourceControl = item.GetContextControl() as ListView;
                     if (sourceControl != null)
                     {
                         var listItem =sourceControl.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
@@ -47,7 +47,7 @@ namespace TopBar.Plugins.Shortcuts
                 var item = sender as ToolStripMenuItem;
                 if (item != null)
                 {
-                    var sourceControl = item.GetSourceControl() as ListView;
+                    var sourceControl = item.GetContextControl() as ListView;
                     if (sourceControl != null)
                     {
                         var listItem = sourceControl.SelectedItems.Cast<ListViewItem>().SingleOrDefault();
