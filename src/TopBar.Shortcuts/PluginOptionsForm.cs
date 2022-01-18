@@ -27,6 +27,8 @@ namespace TopBar.Plugins.Shortcuts
             {
                 RenderMode = ToolStripRenderMode.System
             };
+            _contextMenuStripShortcut.VisibleChanged += _contextMenuStripShortcut_VisibleChanged;
+
             _contextMenuStripShortcut.Items.AddRange(new ToolStripItem[] {
             new ToolStripMenuItem("Edit label", null, (sender, e) =>
             {
@@ -58,7 +60,6 @@ namespace TopBar.Plugins.Shortcuts
             }, "Remove") });
             _listviewShorcuts.ContextMenuStrip = _contextMenuStripShortcut;
 
-
             _imageList = new ImageList()
             {
                 ColorDepth = ColorDepth.Depth32Bit,
@@ -84,6 +85,14 @@ namespace TopBar.Plugins.Shortcuts
                 return item;
             }).ToArray());
 
+        }
+
+        private void _contextMenuStripShortcut_VisibleChanged(object? sender, EventArgs e)
+        {
+            if(this._listviewShorcuts.SelectedItems.Count == 0)
+                this._contextMenuStripShortcut.Enabled = false;
+            else
+                this._contextMenuStripShortcut.Enabled = true;
         }
 
         private void _listviewShorcuts_AfterLabelEdit(object? sender, LabelEditEventArgs e)

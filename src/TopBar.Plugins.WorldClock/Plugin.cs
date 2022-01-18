@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TopBar.Plugins.Extensions;
 
@@ -12,7 +13,6 @@ namespace TopBar.Plugins.WorldClock
         readonly ColorTheme _colorTheme;
         readonly IEnumerable<ToolStripMenuItem> _menuItems;
 
-        readonly DateTimeControl _dateTimeControl;
 
         public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
         public override string Name => "World Clock";
@@ -20,19 +20,12 @@ namespace TopBar.Plugins.WorldClock
         public Plugin(ColorTheme colorTheme) : base()
         {
             _colorTheme = colorTheme;
-
-            _dateTimeControl = new DateTimeControl(_colorTheme, new ClockConfiguration()
-            {
-                TimeZoneId = "Arabian Standard Time",
-                Title = "UAE"
-            })
-            { Dock = DockStyle.Right };
-
-
             this.Dock = DockStyle.Right;
 
-            this.Controls.Add(_dateTimeControl);
-            this.Width = _dateTimeControl.Width;
+
+            var configuration = this.LoadConfiguration(typeof(Configuration)) as Configuration;
+            if(configuration != null)
+                AddTimeZones(configuration);
 
             _menuItems = new ToolStripMenuItem[] {
                 new ToolStripMenuItem("Settings...", null,
@@ -42,8 +35,29 @@ namespace TopBar.Plugins.WorldClock
                     },"Settings")
                 };
 
+        }
 
+        private void AddTimeZones(Configuration configuration)
+        {
+            var form = this.FindForm();
+            if(form != null)
+                form.LockWindowUpdate();
 
+            this.Controls.Clear();
+            foreach (var item in configuration.DatesAndTimes)
+            {
+                var dateTimeControl = new DateTimeControl(_colorTheme, new ClockConfiguration()
+                {
+                    TimeZoneId = item.TimeZoneId,
+                    Title = item.Title
+                })
+                { Dock = DockStyle.Right };
+                this.Controls.Add(dateTimeControl);
+            }
+            this.Width = this.Controls.Cast<Control>().Sum(c => c.Width);
+
+            if (form != null)
+                form.UnlockWindowUpdate();
         }
 
         private void ShowOptionsWinow()
@@ -59,17 +73,26 @@ namespace TopBar.Plugins.WorldClock
             {
                 if (optionsForm.ShowDialog() == DialogResult.OK)
                 {
-                    this.FindForm().LockWindowUpdate();
-                    //this.Controls.Clear();
-
-                    this.FindForm().UnlockWindowUpdate();
+                    this.AddTimeZones(optionsForm.Configuration);
                 }
             }
         }
 
         public override async Task SaveConfiguration()
         {
-            await Task.CompletedTask;
+            var timeControls = this.Controls.Cast<DateTimeControl>();
+            var configuration = new Configuration()
+            {
+                DatesAndTimes = timeControls.Select(c => c.Configuration)
+            };
+            var configContent = JsonSerializer.Serialize<Configuration>(
+                 configuration,
+                 new JsonSerializerOptions()
+                 {
+                     WriteIndented = true
+                 });
+
+            await File.WriteAllTextAsync(path: this.ConfigurationFilePath, configContent);
         }
     }
 }

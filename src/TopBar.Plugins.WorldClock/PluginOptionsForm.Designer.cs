@@ -36,6 +36,7 @@
             this.headerTimeZone = new System.Windows.Forms.ColumnHeader();
             this.buttonMoveUp = new System.Windows.Forms.Button();
             this.buttonMoveDown = new System.Windows.Forms.Button();
+            this.buttonAdd = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonCancel
@@ -78,7 +79,6 @@
             this._listviewTimezones.TabIndex = 4;
             this._listviewTimezones.UseCompatibleStateImageBehavior = false;
             this._listviewTimezones.View = System.Windows.Forms.View.Details;
-            this._listviewTimezones.SelectedIndexChanged += new System.EventHandler(this._listviewShorcuts_SelectedIndexChanged);
             // 
             // headerTitle
             // 
@@ -108,6 +108,16 @@
             this.buttonMoveDown.TabIndex = 6;
             this.buttonMoveDown.UseVisualStyleBackColor = true;
             // 
+            // buttonAdd
+            // 
+            this.buttonAdd.Image = ((System.Drawing.Image)(resources.GetObject("buttonAdd.Image")));
+            this.buttonAdd.Location = new System.Drawing.Point(12, 380);
+            this.buttonAdd.Name = "buttonAdd";
+            this.buttonAdd.Size = new System.Drawing.Size(39, 35);
+            this.buttonAdd.TabIndex = 7;
+            this.buttonAdd.UseVisualStyleBackColor = true;
+            this.buttonAdd.Click += new System.EventHandler(this.buttonAdd_Click);
+            // 
             // PluginOptionsForm
             // 
             this.AcceptButton = this.buttonSave;
@@ -115,6 +125,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(707, 451);
+            this.Controls.Add(this.buttonAdd);
             this.Controls.Add(this.buttonMoveDown);
             this.Controls.Add(this.buttonMoveUp);
             this.Controls.Add(this._listviewTimezones);
@@ -140,5 +151,6 @@
         private Button buttonSave;
         private Button buttonCancel;
         private ColumnHeader headerTimeZone;
+        private Button buttonAdd;
     }
 }
