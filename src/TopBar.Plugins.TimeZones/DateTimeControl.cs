@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TopBar.Plugins.Extensions;
 using Forms = System.Windows.Forms;
 
-namespace TopBar.Plugins.WorldClock
+namespace TopBar.Plugins.TimeZones
 {
     internal class DateTimeControl : Panel
     {

@@ -1,4 +1,4 @@
-﻿namespace TopBar.Plugins.WorldClock
+﻿namespace TopBar.Plugins.TimeZones
 {
     partial class PluginOptionsForm
     {

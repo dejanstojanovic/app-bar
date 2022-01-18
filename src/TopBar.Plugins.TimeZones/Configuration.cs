@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TopBar.Plugins.WorldClock
+namespace TopBar.Plugins.TimeZones
 {
     public class Configuration
     {

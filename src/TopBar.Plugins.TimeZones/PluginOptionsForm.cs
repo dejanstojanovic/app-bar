@@ -2,7 +2,7 @@
 using TopBar.Plugins.Extensions;
 using static System.Windows.Forms.ListViewItem;
 
-namespace TopBar.Plugins.WorldClock
+namespace TopBar.Plugins.TimeZones
 {
     public partial class PluginOptionsForm : Form
     {

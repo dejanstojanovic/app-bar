@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using TopBar.Plugins.Extensions;
 
-namespace TopBar.Plugins.WorldClock
+namespace TopBar.Plugins.TimeZones
 {
     public class Plugin : PluginBase
     {
@@ -10,7 +10,7 @@ namespace TopBar.Plugins.WorldClock
 
 
         public override IEnumerable<ToolStripMenuItem> MenuItems => _menuItems;
-        public override string Name => "World Clock";
+        public override string Name => "Time zones";
         public override int Order => 1;
         public Plugin(ColorTheme colorTheme) : base()
         {
