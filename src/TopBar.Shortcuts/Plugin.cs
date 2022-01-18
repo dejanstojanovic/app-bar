@@ -58,7 +58,7 @@ namespace TopBar.Plugins.Shortcuts
                     {
                         Checked = this.ShowLabels
                     },
-                new ToolStripMenuItem("Add shortcuts...", null,
+                new ToolStripMenuItem("Add shortcut to file...", null,
                         (sender, e) =>
                         {
                             var dialog = new OpenFileDialog();
@@ -67,8 +67,17 @@ namespace TopBar.Plugins.Shortcuts
                             {
                                 this.AddShortcuts(dialog.FileNames.Select(f=> new ShortcutConfiguration(f)), this.ShowLabels);
                             }
-                        },"AddShortcuts"),
-                                new ToolStripMenuItem("Options...", null,
+                        },"AddFileShortcuts"),
+                new ToolStripMenuItem("Add shortcut to folder...", null,
+                        (sender, e) =>
+                        {
+                            var dialog = new FolderBrowserDialog();
+                            if (dialog.ShowDialog() == DialogResult.OK)
+                            {
+                                this.AddShortcuts(new ShortcutConfiguration[] {new ShortcutConfiguration(dialog.SelectedPath)}, this.ShowLabels);
+                            }
+                        },"AddFolderShortcut"),
+               new ToolStripMenuItem("Options...", null,
                         (sender, e) =>
                         {
                             ShowOptionsWinow();

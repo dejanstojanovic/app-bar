@@ -21,7 +21,19 @@
 
             _shortcuts = shortcuts;
 
-            _contextMenuStripShortcut = new ContextMenuStrip();
+            _contextMenuStripShortcut = new ContextMenuStrip()
+            {
+                RenderMode = ToolStripRenderMode.System
+            };
+            _contextMenuStripShortcut.Items.AddRange(new ToolStripItem[] {
+            new ToolStripMenuItem("Edit label", null, (sender, e) =>
+            {
+                var item = sender as ToolStripMenuItem;
+                if (item != null)
+                {
+
+                }
+            }, "Edit") });
 
             _imageList = new ImageList()
             {
