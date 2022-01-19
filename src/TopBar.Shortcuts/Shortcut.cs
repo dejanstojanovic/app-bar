@@ -33,7 +33,7 @@ namespace TopBar.Plugins.Shortcuts
 
             this.Radius = 3;
             this.Thickness = 0;
-            this.Top = 2;
+            this.Top = 4;
 
             _toolTip = new ToolTip()
             {
@@ -45,8 +45,8 @@ namespace TopBar.Plugins.Shortcuts
 
             _pictureBox = new PictureBox()
             {
-                Size = new Size(20, 20),
-                Padding = new Padding(2),
+                Size = new Size(24, 24),
+                Padding = new Padding(4),
                 Top = 0,
                 Left = 0
             };
