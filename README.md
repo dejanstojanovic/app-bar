@@ -1,4 +1,4 @@
-# TopBar - tiny extensible top-bar for :window: Windows 
+# TopBar - tiny extensible top-bar for Windows 
 
 The idea behind this tiny pet project is to have some additional info on one of the secondary screens. I basically just needed my system resources load displayed all the time but did not want to bloat my already overloaded taskbar (any application with this capability will show it only on primary screen taskbar).
 
