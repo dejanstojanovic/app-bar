@@ -210,5 +210,27 @@ namespace TopBar.Plugins.TimeZones
 
             this._listviewTimezones.Items.Add(item);
         }
+
+        private void buttonMoveUp_Click(object sender, EventArgs e)
+        {
+            var selected = _listviewTimezones.SelectedItems != null ? _listviewTimezones.SelectedItems.Cast<ListViewItem>().SingleOrDefault() : null;
+            if (selected != null && selected.Index > 0)
+            {
+                var index = selected.Index;
+                _listviewTimezones.Items.RemoveAt(index);
+                _listviewTimezones.Items.Insert(index - 1, selected);
+            }
+        }
+
+        private void buttonMoveDown_Click(object sender, EventArgs e)
+        {
+            var selected = _listviewTimezones.SelectedItems != null ? _listviewTimezones.SelectedItems.Cast<ListViewItem>().SingleOrDefault() : null;
+            if (selected != null && selected.Index < _listviewTimezones.Items.Count - 1)
+            {
+                var index = selected.Index;
+                _listviewTimezones.Items.RemoveAt(index);
+                _listviewTimezones.Items.Insert(index + 1, selected);
+            }
+        }
     }
 }
