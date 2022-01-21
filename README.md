@@ -11,3 +11,7 @@ That is why I started writing this tiny application. There was bunch of space so
 - Basic system resources load % (CPU/RAM)
 - Switching monitors where the TopBar sits
 - Adapting colors to current Windows theme (requires app restart after theme change)
+
+## Known issues
+- Windows transparency effect not applied
+- Issues displaying the bar on scaled layout monitors
