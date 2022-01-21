@@ -9,16 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Icons\calendar_black.png" />
-    <None Remove="Icons\calendar_white.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Icons\calendar_black.png" />
-    <EmbeddedResource Include="Icons\calendar_white.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TopBar.Plugins\TopBar.Plugins.csproj" />
   </ItemGroup>
 
@@ -35,6 +25,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Icons\" />
   </ItemGroup>
 
 </Project>

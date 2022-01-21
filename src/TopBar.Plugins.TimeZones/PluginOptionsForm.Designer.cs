@@ -98,6 +98,7 @@
             this.buttonMoveUp.Size = new System.Drawing.Size(39, 35);
             this.buttonMoveUp.TabIndex = 5;
             this.buttonMoveUp.UseVisualStyleBackColor = true;
+            this.buttonMoveUp.Click += new System.EventHandler(this.buttonMoveUp_Click);
             // 
             // buttonMoveDown
             // 
@@ -107,6 +108,7 @@
             this.buttonMoveDown.Size = new System.Drawing.Size(39, 35);
             this.buttonMoveDown.TabIndex = 6;
             this.buttonMoveDown.UseVisualStyleBackColor = true;
+            this.buttonMoveDown.Click += new System.EventHandler(this.buttonMoveDown_Click);
             // 
             // buttonAdd
             // 
