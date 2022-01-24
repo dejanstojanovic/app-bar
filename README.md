@@ -4,7 +4,7 @@ The idea behind this tiny pet project is to have some additional info on one of 
 
 That is why I started writing this tiny application. There was bunch of space so I throw in some shortcuts and the rest of the stuff followed
 
-![TopBar on Windows11](https://dejanstojanovic.net/media/396413/top-bar-win11.png)
+![TopBar on Windows11](https://dejanstojanovic.net/media/396414/top-bar-win11.png)
 
 ## Features
 - Shortcuts to your favorite apps/files/folders (by drag&drop or browse)
