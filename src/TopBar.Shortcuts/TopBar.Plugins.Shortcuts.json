@@ -12,6 +12,14 @@
     {
       "Path": "%windir%\\explorer.exe",
       "Label": "Explorer"
+    },
+    {
+      "Path": "%USERPROFILE%\\Desktop",
+      "Label": "Desktop"
+    },
+    {
+      "Path": "%USERPROFILE%\\Downloads",
+      "Label": "Downloads"
     }
   ]
 }
